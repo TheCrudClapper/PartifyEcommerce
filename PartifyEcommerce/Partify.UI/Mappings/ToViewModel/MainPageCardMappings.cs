@@ -6,16 +6,14 @@ namespace CSOS.UI.Mappings.ToViewModel
 {
     public static class MainPageCardMappings
     {
-        public static MainPageCardViewModel ToMainPageCardViewModel(this CardResponse dto, IConfigurationReader configurationReader)
+        public static MainPageCardViewModel ToCardViewModel(this CardResponse dto, IPictureHandlerService pictureHandlerService)
         {
             return new MainPageCardViewModel
             {
                 Id = dto.Id,
                 Title = dto.Title,
                 Price = dto.Price,
-                ImageUrl = string.IsNullOrWhiteSpace(dto.ImageUrl)
-                    ? configurationReader.DefaultProductImage
-                    : dto.ImageUrl,
+                ImageUrl = pictureHandlerService.ReplaceImageIfNotFound(dto.ImageUrl),
             };
         }
     }

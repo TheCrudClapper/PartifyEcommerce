@@ -176,7 +176,7 @@ namespace CSOS.UI.Controllers
             _logger.LogInformation("OfferControler - GET UserOffers Method called with parameters: Title: {Title}", title);
             IEnumerable<UserOfferResponse> response = await _offerService.GetFilteredUserOffers(title);
             IEnumerable<UserOffersViewModel> userOffers = response
-                .Select(item => item.ToUserOffersViewModel(_configurationReader));
+                .Select(item => item.ToUserOffersViewModel(_pictureHandlerService));
 
             return View(userOffers);
         }
@@ -187,7 +187,7 @@ namespace CSOS.UI.Controllers
             _logger.LogInformation("OfferControler - GET FilterUserOffers Method called with parameters: Title: {Title}", title);
             IEnumerable<UserOfferResponse> response = await _offerService.GetFilteredUserOffers(title);
             IEnumerable<UserOffersViewModel> viewModel = response
-                .Select(item => item.ToUserOffersViewModel(_configurationReader));
+                .Select(item => item.ToUserOffersViewModel(_pictureHandlerService));
             return PartialView("OfferPartials/_UserOfferListPartial", viewModel);
         }
 
@@ -204,7 +204,7 @@ namespace CSOS.UI.Controllers
                 return View("Error", response.Error.Description);
             }
                
-            var viewModel = response.Value.ToOfferDetailsViewModel(_configurationReader);
+            var viewModel = response.Value.ToOfferDetailsViewModel(_pictureHandlerService);
             return View(viewModel);
         }
 
@@ -216,7 +216,7 @@ namespace CSOS.UI.Controllers
             IEnumerable<OfferIndexResponse> filteredOffers = await _offerService.GetFilteredOffers(filter);
             OfferIndexViewModel viewModel = new OfferIndexViewModel()
             {
-                Items = filteredOffers.Select(item => item.ToOfferIndexItemViewModel(_configurationReader))
+                Items = filteredOffers.Select(item => item.ToOfferIndexItemViewModel(_pictureHandlerService))
                     .ToList(),
 
                 DeliveryOptions = (await _deliveryTypeGetterService.GetAllDeliveryTypesAsSelectionList())
@@ -236,7 +236,7 @@ namespace CSOS.UI.Controllers
         {
             _logger.LogInformation("OfferControler - GET FilterOffers Method called with parameters: {@OfferFilter}", filter);
             IEnumerable<OfferIndexResponse> filteredOffers = await _offerService.GetFilteredOffers(filter);
-            var viewModel = filteredOffers.Select(item => item.ToOfferIndexItemViewModel(_configurationReader));
+            var viewModel = filteredOffers.Select(item => item.ToOfferIndexItemViewModel(_pictureHandlerService));
             return PartialView("OfferPartials/_OfferListPartial", viewModel);
         }
     }

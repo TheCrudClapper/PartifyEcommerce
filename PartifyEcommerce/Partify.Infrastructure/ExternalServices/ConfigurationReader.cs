@@ -7,18 +7,16 @@ namespace CSOS.UI.Helpers
     {
         private readonly IConfiguration _configuration;
 
-        public string DefaultProductImage { get; set; } = null!;
+        public string DefaultPicturePlaceholder { get; set; } = null!;
+        public string DefaultProductsPicturesDirectory { get; set; } = null!;
+        public string DefaultCategoryPicturesDirectory { get; set; } = null!;
+
         public ConfigurationReader(IConfiguration configuration)
         {
             _configuration = configuration;
-            GetDefaultProductImage();
-        }
-
-        private void GetDefaultProductImage()
-        {
-            DefaultProductImage = _configuration.GetValue<string>("ProjectVariables:DefaultProductImage")
-                                   ?? "/images/no-image.png";
+            DefaultPicturePlaceholder = configuration["ImageDirectories:DefaultPicturePlaceholder"] ?? "/images/no-image.png";
+            DefaultProductsPicturesDirectory = configuration["ImageDirectories:DefaultProductPicturesDirectory"] ?? "/wwwroot/offer-images/";
+            DefaultCategoryPicturesDirectory = configuration["ImageDirectories:DefaultCategoryPicturesDirectory"] ?? "/wwwroot/category-images/";
         }
     }
 }
-

@@ -21,7 +21,7 @@ namespace CSOS.UI.Mappings.ToViewModel
                     DateAdded = item.DateAdded,
                     Id = item.Id,
                     ImageUrl = string.IsNullOrWhiteSpace(item.ImageUrl)
-                    ? configuration.DefaultProductImage
+                    ? configuration.DefaultPicturePlaceholder
                     : item.ImageUrl,
                     OfferId = item.OfferId,
                     Price = item.Price,

@@ -1,5 +1,4 @@
 ﻿using CSOS.Core.Domain.Entities;
-using CSOS.Core.DTO;
 using CSOS.Core.DTO.DeliveryTypeDto;
 using CSOS.Core.DTO.OfferDto;
 using CSOS.Core.DTO.UniversalDto;

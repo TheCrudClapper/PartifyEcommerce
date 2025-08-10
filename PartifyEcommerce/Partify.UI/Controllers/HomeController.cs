@@ -13,15 +13,18 @@ namespace CSOS.UI.Controllers
     public class HomeController : Controller
     {
         private readonly IOfferService _offerService;
+        private readonly IPictureHandlerService _pictureHandlerService;
         private readonly ICategoryGetterService _categoryGetterService;
-        private readonly IConfigurationReader _configurationReader;
         private readonly ILogger<HomeController> _logger;
 
-        public HomeController(IOfferService offerService, ICategoryGetterService categoryGetterService, IConfigurationReader configurationReader, ILogger<HomeController> logger)
+        public HomeController(IOfferService offerService,
+            ICategoryGetterService categoryGetterService,
+            ILogger<HomeController> logger,
+            IPictureHandlerService pictureHandlerService)
         {
             _offerService = offerService;
             _categoryGetterService = categoryGetterService;
-            _configurationReader = configurationReader;
+            _pictureHandlerService = pictureHandlerService;
             _logger = logger;
         }
 
@@ -31,10 +34,10 @@ namespace CSOS.UI.Controllers
             _logger.LogInformation("HomeController - GET Index Method called");
             var viewModel = new IndexPageViewModel()
             {
-                Cards = (await _offerService.GetIndexPageOffers()).Select((item => item.ToMainPageCardViewModel(_configurationReader))),
+                Cards = (await _offerService.GetIndexPageOffers()).Select((item => item.ToCardViewModel(_pictureHandlerService))),
                 Categories = (await _categoryGetterService.GetProductCategoriesAsSelectList()).ToSelectListItem(),
-                CategoriesSlider = (await _categoryGetterService.GetProductCategoriesAsCardResponse()).Select(item => item.ToMainPageCardViewModel(_configurationReader)),
-                BestDeals = (await _offerService.GetDealsOfTheDay()).Select(item=>item.ToMainPageCardViewModel(_configurationReader)),
+                CategoriesSlider = (await _categoryGetterService.GetProductCategoriesAsCardResponse()).Select(item => item.ToCardViewModel(_pictureHandlerService)),
+                BestDeals = (await _offerService.GetDealsOfTheDay()).Select(item=>item.ToCardViewModel(_pictureHandlerService)),
             };
             return View(viewModel);
         }

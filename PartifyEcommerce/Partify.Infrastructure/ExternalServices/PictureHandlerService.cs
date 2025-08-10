@@ -4,11 +4,22 @@ namespace ComputerServiceOnlineShop.Services
 {
     public class PictureHandlerService : IPictureHandlerService
     {
-        string response = "";
-        string[] allowedExtensions = new[] { ".jpg", ".jpeg", ".png" };
+        private string offerPicturesDirectory;
+        private string categoriesPicturesDirectory;
+        private string response = "";
+        private string[] allowedExtensions = new[] { ".jpg", ".jpeg", ".png" };
+
+        private readonly IConfigurationReader _configurationReader;
+        public PictureHandlerService(IConfigurationReader configurationReader)
+        {
+            _configurationReader = configurationReader;
+            offerPicturesDirectory = _configurationReader.DefaultProductsPicturesDirectory;
+            categoriesPicturesDirectory = _configurationReader.DefaultCategoryPicturesDirectory;
+        }
+
         public string CheckFileExtensions(List<IFormFile> uploadedImages)
         {
-            if(uploadedImages != null && uploadedImages.Count > 0)
+            if (uploadedImages != null && uploadedImages.Count > 0)
             {
                 foreach (var image in uploadedImages)
                 {
@@ -22,7 +33,7 @@ namespace ComputerServiceOnlineShop.Services
             }
             else
             {
-                response = $"AddAsync at least one image in extendsion {string.Join(',', allowedExtensions)}";
+                response = $"Add at least one image in extendsion {string.Join(',', allowedExtensions)}";
                 return response;
             }
             return response = "OK";
@@ -32,23 +43,20 @@ namespace ComputerServiceOnlineShop.Services
         {
             List<string> imagePaths = new List<string>();
 
-            string directoryPath = "wwwroot/offer-images/";
-            if (!Directory.Exists(directoryPath))
+            CreateDirIfNotExist(offerPicturesDirectory);
+
+            if (uploadedImages != null && uploadedImages.Count > 0)
             {
-                Directory.CreateDirectory(directoryPath);
-            }
-            if(uploadedImages != null && uploadedImages.Count > 0)
-            {
-                foreach(var file in uploadedImages)
+                foreach (var file in uploadedImages)
                 {
-                    if(file.Length > 0)
+                    if (file.Length > 0)
                     {
                         var fileName = Path.GetFileNameWithoutExtension(file.FileName)
                             + "_" + Guid.NewGuid()
                             + Path.GetExtension(file.FileName).ToLower();
 
-                        var filePath = Path.Combine(directoryPath, fileName);
-                        
+                        var filePath = Path.Combine(offerPicturesDirectory, fileName);
+
 
                         using (var stream = new FileStream(filePath, FileMode.Create))
                         {
@@ -60,13 +68,40 @@ namespace ComputerServiceOnlineShop.Services
             }
             return imagePaths;
         }
-        public void DeleteSelectedPictures(List<string> ImagesUrlsToDelete)
+
+        public string ReplaceImageIfNotFound(string? filePath)
         {
-            foreach (var path in ImagesUrlsToDelete)
+
+            if (string.IsNullOrEmpty(filePath))
+                return _configurationReader.DefaultPicturePlaceholder;
+
+            //logic for product images
+            if (filePath.StartsWith("/offer-images/", StringComparison.OrdinalIgnoreCase))
             {
-               File.Delete($"wwwroot/{path}");
+                CreateDirIfNotExist(offerPicturesDirectory);
+                var physicalPath = Path.Combine(offerPicturesDirectory, Path.GetFileName(filePath));
+                if (!File.Exists(physicalPath))
+                    return _configurationReader.DefaultPicturePlaceholder;
             }
+            else if (filePath.StartsWith("/category-images/", StringComparison.OrdinalIgnoreCase))
+            {
+                CreateDirIfNotExist(categoriesPicturesDirectory);
+                var physicalPath = Path.Combine(categoriesPicturesDirectory, Path.GetFileName(filePath));
+                if (!File.Exists(physicalPath))
+                    return _configurationReader.DefaultPicturePlaceholder;
+            }
+            else
+            {
+                return _configurationReader.DefaultPicturePlaceholder;
+            }
+
+            return filePath;
         }
 
+        private void CreateDirIfNotExist(string dir)
+        {
+            if (!Directory.Exists(dir))
+                Directory.CreateDirectory(dir);
+        }
     }
 }

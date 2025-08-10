@@ -3,7 +3,6 @@ using CSOS.Core.DTO.OfferDto;
 using CSOS.UI.Mappings.Universal;
 using CSOS.UI.ViewModels.DeliveryTypeViewModels;
 using CSOS.UI.ViewModels.OfferViewModels;
-using CSOS.UI.ViewModels.SharedViewModels;
 
 namespace CSOS.UI.Mappings.ToViewModel
 {
@@ -27,7 +26,7 @@ namespace CSOS.UI.Mappings.ToViewModel
             };
         }
 
-        public static OfferIndexItemViewModel ToOfferIndexItemViewModel(this OfferIndexResponse dto, IConfigurationReader configurationReader)
+        public static OfferIndexItemViewModel ToOfferIndexItemViewModel(this OfferIndexResponse dto, IPictureHandlerService pictureHandlerService)
         {
             return new OfferIndexItemViewModel
             {
@@ -36,7 +35,7 @@ namespace CSOS.UI.Mappings.ToViewModel
                 ProductName = dto.ProductName,
                 Id = dto.Id,
                 DateCreated = dto.DateCreated,
-                ImageUrl = string.IsNullOrEmpty(dto.ImageUrl) ? configurationReader.DefaultProductImage : dto.ImageUrl,
+                ImageUrl = pictureHandlerService.ReplaceImageIfNotFound(dto.ImageUrl),
                 ProductCategory = dto.ProductCategory,
                 ProductCondition = dto.ProductCondition,
                 StockQuantity = dto.StockQuantity,
@@ -44,7 +43,7 @@ namespace CSOS.UI.Mappings.ToViewModel
             };
         }
         
-        public static OfferDetailsViewModel ToOfferDetailsViewModel(this OfferResponse dto, IConfigurationReader configurationReader)
+        public static OfferDetailsViewModel ToOfferDetailsViewModel(this OfferResponse dto, IPictureHandlerService pictureHandlerService)
         {
             
             return new OfferDetailsViewModel
@@ -67,17 +66,17 @@ namespace CSOS.UI.Mappings.ToViewModel
                 Seller= dto.Seller,
                 ProductCategory = dto.ProductCategory,
                 StockQuantity = dto.StockQuantity,
-                ProductImages = dto.ProductImages.Select(img => string.IsNullOrEmpty(img) ? configurationReader.DefaultProductImage : img).ToList(),
+                ProductImages = dto.ProductImages.Select(img => pictureHandlerService.ReplaceImageIfNotFound(img)).ToList(),
             };
         }
 
-        public static UserOffersViewModel ToUserOffersViewModel(this UserOfferResponse dto, IConfigurationReader configurationReader)
+        public static UserOffersViewModel ToUserOffersViewModel(this UserOfferResponse dto, IPictureHandlerService pictureHandlerService)
         {
             return new UserOffersViewModel
             {
                 DateCreated = dto.DateCreated,
                 Id = dto.Id,
-                ImageUrl = string.IsNullOrEmpty(dto.ImageUrl) ? configurationReader.DefaultProductImage : dto.ImageUrl,
+                ImageUrl = pictureHandlerService.ReplaceImageIfNotFound(dto.ImageUrl),
                 Price = dto.Price,
                 ProductCategory = dto.ProductCategory,
                 ProductCondition = dto.ProductCondition,
