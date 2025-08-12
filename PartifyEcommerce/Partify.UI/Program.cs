@@ -1,5 +1,6 @@
 using ComputerServiceOnlineShop.Entities.Models.IdentityEntities;
 using ComputerServiceOnlineShop.Services;
+using CSOS.Infrastructure;
 using CSOS.Core.Domain.InfrastructureServiceContracts;
 using CSOS.Core.Domain.RepositoryContracts;
 using CSOS.Core.ServiceContracts;
@@ -14,6 +15,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
+using CSOS.Core;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -39,43 +41,18 @@ builder.Services.AddIdentity<ApplicationUser, ApplicationRole>()
     .AddEntityFrameworkStores<DatabaseContext>()
     .AddDefaultTokenProviders();
 
+//Add Infrastructure Layer
+builder.Services.AddInfrastructureLayer();
 
-// Add Business-Logic Services to the container.
-builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
-builder.Services.AddScoped<IAccountService, AccountService>();
-builder.Services.AddScoped<IOfferService, OfferService>();
-builder.Services.AddScoped<IPictureHandlerService, PictureHandlerService>();
-builder.Services.AddScoped<ICountriesGetterService, CountryGetterService>();
-builder.Services.AddScoped<ICategoryGetterService, CategoryGetterService>();
-builder.Services.AddScoped<IDeliveryTypeGetterService, DeliveryTypeGetterService>();
-builder.Services.AddScoped<IConditionGetterService, ConditionGetterService>();
-builder.Services.AddScoped<ICartService, CartService>();
-builder.Services.AddScoped<IOrderService, OrderService>();
-builder.Services.AddScoped<IAddressService, AddressService>();
-builder.Services.AddScoped<IProductImageService, ProductImageService>();
-builder.Services.AddScoped<ISortingOptionService, SortingOptionsService>();
+// Add Core Layer
+builder.Services.AddCoreLayer();
 
 //Add Helper Classes
 builder.Services.AddScoped<OfferViewModelInitializer>();
 builder.Services.AddScoped<PicturesValidatorHelper>();
-builder.Services.AddScoped<IConfigurationReader, ConfigurationReader>();
 
 //Add Unit of Work
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
-
-//Add repositories
-builder.Services.AddScoped<IOfferRepository, OfferRepository>();
-builder.Services.AddScoped<IOfferDeliveryTypeRepository, OfferDeliveryTypeRepository>();
-builder.Services.AddScoped<IProductRepository, ProductRepository>();
-builder.Services.AddScoped<IProductImageRepository, ProductImageRepository>();
-builder.Services.AddScoped<IAccountRepository, AccountRepository>();
-builder.Services.AddScoped<IProductCategoryRepository, ProductCategoryRepository>();
-builder.Services.AddScoped<IConditionRepository, ConditionRepository>();
-builder.Services.AddScoped<IAddressRepository, AddressRepository>();
-builder.Services.AddScoped<IDeliveryTypeRepository, DeliveryTypeRepository>();
-builder.Services.AddScoped<ICountryRepository, CountryRepository>();
-builder.Services.AddScoped<ICartRepository, CartRepository>();
-
 
 builder.Services.AddAuthorization(options =>
 {
@@ -125,6 +102,7 @@ builder.Services.AddControllersWithViews(options =>
 });
 
 var app = builder.Build();
+
 // Configure the HTTP request pipeline.
 
 app.UseSerilogRequestLogging();
@@ -139,14 +117,17 @@ else
 }
 
 app.UseStaticFiles();
+
 app.UseHsts();
 app.UseHttpsRedirection();
 
 app.UseHttpLogging();
 
 app.UseRouting();
+
 app.UseAuthentication(); //reads auth cookie and can extract data from it
 app.UseAuthorization(); //validates access permissions of the user
+
 app.UseSession();
 
 //Controllers for Admin Role
