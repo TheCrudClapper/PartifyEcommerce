@@ -212,3 +212,17 @@ body {
 .pagination-tile{
 
 }
+.favourites-button {
+    color: #25262b;
+    background: none !important;
+    border: none !important;
+    box-shadow: none !important;
+}
+
+    .favourites-button:focus {
+        outline: none;
+        box-shadow: none !important;
+    }
+    .favourites-button:hover {
+        color: #863cb0;
+    }

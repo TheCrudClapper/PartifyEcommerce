@@ -1,4 +1,5 @@
 ﻿using CSOS.Core.Domain.Entities;
+using CSOS.Core.DTO.LikedOfferDto;
 using CSOS.Core.DTO.OfferDto;
 using CSOS.Core.DTO.UniversalDto;
 using CSOS.Core.Helpers;
@@ -75,5 +76,13 @@ namespace CSOS.Core.ServiceContracts
         /// </summary>
         /// <returns>List of offers labeled as deals of the day.</returns>
         Task<IEnumerable<CardResponse>> GetDealsOfTheDay();
+
+
+        /// <summary>
+        /// Likes or unlikes offers
+        /// </summary>
+        /// <param name="offerId"></param>
+        /// <returns></returns>
+        Task<Result<LikedOfferResponse>> ToggleLike(int offerId);
     }
 }

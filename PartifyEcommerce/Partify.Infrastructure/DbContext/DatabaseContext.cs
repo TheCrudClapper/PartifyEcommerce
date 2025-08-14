@@ -18,6 +18,7 @@ namespace CSOS.Infrastructure.DbContext
         public DbSet<DeliveryType> DeliveryTypes { get; set; } = default!;
         public DbSet<OfferDeliveryType> OfferDeliveryTypes { get; set; } = default!;
         public DbSet<ProductImage> ProductImages { get; set; } = default!;
+        public DbSet<LikedOffer> LikedOffers { get; set; } = default!;
         public DatabaseContext(DbContextOptions<DatabaseContext> options) : base(options)
         {
 

@@ -20,5 +20,7 @@ namespace CSOS.Core.Domain.Entities
         public Product Product { get; set; } = null!;
         public ICollection<OfferDeliveryType> OfferDeliveryTypes { get; set; } = new List<OfferDeliveryType>();
         public ICollection<CartItem> CartItems { get; set; } = new List<CartItem>();
+
+        public ICollection<LikedOffer> LikedOffers { get; set; } = new List<LikedOffer>();
     }
 }

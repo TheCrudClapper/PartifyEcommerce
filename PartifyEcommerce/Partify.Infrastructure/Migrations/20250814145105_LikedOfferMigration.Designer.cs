@@ -4,6 +4,7 @@ using CSOS.Infrastructure.DbContext;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ComputerServiceOnlineShop.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    partial class DatabaseContextModelSnapshot : ModelSnapshot
+    [Migration("20250814145105_LikedOfferMigration")]
+    partial class LikedOfferMigration
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -282,10 +285,6 @@ namespace ComputerServiceOnlineShop.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("OfferId");
-
-                    b.HasIndex("UserId");
 
                     b.ToTable("LikedOffers");
                 });
@@ -754,25 +753,6 @@ namespace ComputerServiceOnlineShop.Migrations
                     b.Navigation("Offer");
                 });
 
-            modelBuilder.Entity("CSOS.Core.Domain.Entities.LikedOffer", b =>
-                {
-                    b.HasOne("CSOS.Core.Domain.Entities.Offer", "Offer")
-                        .WithMany("LikedOffers")
-                        .HasForeignKey("OfferId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("ComputerServiceOnlineShop.Entities.Models.IdentityEntities.ApplicationUser", "User")
-                        .WithMany("LikedOffers")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Offer");
-
-                    b.Navigation("User");
-                });
-
             modelBuilder.Entity("CSOS.Core.Domain.Entities.Offer", b =>
                 {
                     b.HasOne("ComputerServiceOnlineShop.Entities.Models.IdentityEntities.ApplicationUser", "Seller")
@@ -916,8 +896,6 @@ namespace ComputerServiceOnlineShop.Migrations
                 {
                     b.Navigation("CartItems");
 
-                    b.Navigation("LikedOffers");
-
                     b.Navigation("OfferDeliveryTypes");
 
                     b.Navigation("Product")
@@ -940,8 +918,6 @@ namespace ComputerServiceOnlineShop.Migrations
 
                     b.Navigation("Cart")
                         .IsRequired();
-
-                    b.Navigation("LikedOffers");
 
                     b.Navigation("Offers");
                 });

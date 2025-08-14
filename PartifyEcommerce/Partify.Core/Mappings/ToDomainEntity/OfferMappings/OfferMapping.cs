@@ -17,5 +17,6 @@ namespace CSOS.Core.Mappings.ToDomainEntity.OfferMappings
                 IsOfferPrivate = dto.IsOfferPrivate,
             };
         }
+
     }
 }

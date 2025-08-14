@@ -18,6 +18,6 @@ namespace ComputerServiceOnlineShop.Entities.Models.IdentityEntities
         public DateTime? DateDeleted { get; set; }
         //Holds offres made by user
         public ICollection<Offer> Offers { get; set; } = new List<Offer>();
-
+        public ICollection<LikedOffer> LikedOffers { get; set; } = new List<LikedOffer>();
     }
 }

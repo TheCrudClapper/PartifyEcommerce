@@ -2,6 +2,7 @@
 using CSOS.Core.Domain.InfrastructureServiceContracts;
 using CSOS.Core.Domain.RepositoryContracts;
 using CSOS.Core.DTO.DtoContracts;
+using CSOS.Core.DTO.LikedOfferDto;
 using CSOS.Core.DTO.OfferDto;
 using CSOS.Core.DTO.UniversalDto;
 using CSOS.Core.Helpers;
@@ -208,6 +209,29 @@ namespace CSOS.Core.Services
                 .Select(deliveryId => deliveryId.ToOfferDeliveryTypeEntity(offer));
 
             await _offerDeliveryTypeRepo.AddRangeAsync(deliveryTypes);
+        }
+
+        public async Task<Result<LikedOfferResponse>> ToggleLike(int offerId)
+        {
+            var userId = _currentUserService.GetUserId();
+            var existing = await _offerRepo.GetLikedOfferAsync(offerId, userId);
+
+            if (existing != null && existing.IsActive)
+            {
+                await _offerRepo.RemoveLikeAsync(existing);
+                await _unitOfWork.SaveChangesAsync();
+                return new LikedOfferResponse(false, "Deleted from liked offers");
+            }
+
+            var likedOffer = new LikedOffer
+            {
+                OfferId = offerId,
+                UserId = userId,
+            };
+
+            await _offerRepo.AddOrReactivateLikeAsync(likedOffer);
+            await _unitOfWork.SaveChangesAsync();
+            return new LikedOfferResponse(true, "Added to liked offers !");
         }
     }
 }

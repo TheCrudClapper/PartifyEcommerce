@@ -21,7 +21,13 @@
             <div class="midesection-style shadow">
                 <span class="mb-2"><span class="fw-bold">Condition: </span>@Model.ProductCondition</span>
                 <span class="mb-2"><span class="fw-bold">Created: </span>@Model.DateCreated.ToString("dd-MM-yyyy")</span>
-                <h2>@Model.Title</h2>
+                <div class="d-flex justify-content-between">
+                    <h2>@Model.Title</h2>
+                    <button class="btn favourites-button" id="favouritesButton" data-id="@Model.Id">
+                        <i class="fa-regular fa-heart favouriteIcon fs-2"></i>
+                    </button>
+                </div>
+
                 @for (int i = 0; i < 5; i++)
                 {
                     <i class="fa-solid fa-star"></i>
@@ -155,6 +161,17 @@
                     const response = xhr.responseJSON;
                     const message = response?.message ?? 'Unexpected error occurred. Try again later.';
                     showToast(message, false);
+                }
+            });
+        });
+
+        $(document).on('click', "#favouritesButton", function(e){
+            e.preventDefault();
+            $.ajax({
+                url: '@Url.Action("LikeOffer", "Offer", new { id = Model.Id })',
+                type: 'GET',
+                success: function(response){
+                    showToast(response.message, response.success);
                 }
             });
         });

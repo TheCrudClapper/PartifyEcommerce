@@ -20,6 +20,8 @@ namespace CSOS.Tests
         private readonly ICategoryGetterService _categoryGetterService;
         private readonly Mock<ICategoryGetterService> _categoryGetterServiceMock;
         private readonly IConfigurationReader _configurationReader;
+        private readonly IPictureHandlerService _pictureHandlerService;
+        private readonly Mock<IPictureHandlerService> _pictureHandlerServiceMock;
         private readonly Mock<IConfigurationReader> _configuartionReaderMock;
         private HomeController _homeController = null!;
         private readonly IFixture _fixture;
@@ -30,14 +32,16 @@ namespace CSOS.Tests
             _offerServiceMock = new Mock<IOfferService>();
             _categoryGetterServiceMock = new Mock<ICategoryGetterService>();
             _configuartionReaderMock = new Mock<IConfigurationReader>();
+            _pictureHandlerServiceMock = new Mock<IPictureHandlerService>();
             _categoryGetterService = _categoryGetterServiceMock.Object;
             _offerService = _offerServiceMock.Object;
             _configurationReader = _configuartionReaderMock.Object;
+            _pictureHandlerService = _pictureHandlerServiceMock.Object;
             _logger = Mock.Of<ILogger<HomeController>>();
         }
         private HomeController CreateController()
         {
-            return new HomeController(_offerService, _categoryGetterService, _configurationReader, _logger);
+            return new HomeController(_offerService, _categoryGetterService, _logger, _pictureHandlerService);
         }
         #region Index Method Tests
         [Fact]
