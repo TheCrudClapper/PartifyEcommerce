@@ -6,12 +6,6 @@
     <link rel="stylesheet" href="~/css/auction-styles.css" asp-append-version="true" />
 }
 
-@if (TempData["SuccessMessage"] != null || TempData["ErrorMessage"] != null)
-{
-    @await Html.PartialAsync("_ToastMessagePartial", TempData)
-}
-
-
 <div class="container mt-3">
     <div class="row g-3 mb-2">
         <span class="fs-6">Partify <b>/</b> @Model.ProductCategory </span>
@@ -23,9 +17,26 @@
                 <span class="mb-2"><span class="fw-bold">Created: </span>@Model.DateCreated.ToString("dd-MM-yyyy")</span>
                 <div class="d-flex justify-content-between">
                     <h2>@Model.Title</h2>
-                    <button class="btn favourites-button" id="favouritesButton" data-id="@Model.Id">
-                        <i class="fa-regular fa-heart favouriteIcon fs-2"></i>
-                    </button>
+                    @if (User.Identity.IsAuthenticated)
+                    {
+                        <button class="btn like-button" id="likeButton" data-id="@Model.Id">
+                            @if (Model.IsLiked == true)
+                            {
+                                <i class="fa-solid fa-heart purple-text fs-2"></i>
+                            }
+                            else
+                            {
+                                <i class="fa-regular fa-heart fs-2"></i>
+                            }
+                        </button>
+                    }
+                    else
+                    {
+                        <button class="btn like-button disabled" id="likeButton">
+                            <i class="fa-regular fa-heart fs-2"></i>
+                        </button>
+                    }
+
                 </div>
 
                 @for (int i = 0; i < 5; i++)
@@ -64,41 +75,43 @@
             <div class="midesection-style shadow">
                 <p>
                     Sells and sends:
-                    <br/>
+                    <br />
                     <span class="fw-bold">@Model.Seller</span>
                 </p>
-                <hr/>
+                <hr />
                 <h3 class="fw-bold">@Model.Price PLN</h3>
                 <h6><span class="badge bg-secondary text-bg-secondary">Seller: @(Model.IsSellerCompany ? "Company" : "Private Person") </span></h6>
                 <div class="row">
-                    @if (User.Identity!.Name != Model.Seller)
+                    @if (User.Identity.IsAuthenticated)
                     {
-                        <form method="post" id="cartForm" asp-action="AddToCart" asp-controller="Cart" asp-route-id="@Model.Id" class="row">
-                            @Html.AntiForgeryToken()
-                            <div class="col-4">
-                                <input type="number"
-                                       value="1"
-                                       name="quantity"
-                                       class="form-control text-center"
-                                       min="1"
-                                       max="@Model.StockQuantity"
-                                       title="Max available: @Model.StockQuantity"/>
+                        @if (User.Identity!.Name != Model.Seller)
+                        {
+                            <form method="post" id="cartForm" asp-action="AddToCart" asp-controller="Cart" asp-route-id="@Model.Id" class="row">
+                                @Html.AntiForgeryToken()
+                                <div class="col-4">
+                                    <input type="number"
+                                           value="1"
+                                           name="quantity"
+                                           class="form-control text-center"
+                                           min="1"
+                                           max="@Model.StockQuantity"
+                                           title="Max available: @Model.StockQuantity" />
+                                </div>
+                                <div class="col-8">
+                                    <button type="submit" class="btn custom-button w-100 toCartButton" data-id="@Model.Id"> To Cart</button>
+                                </div>
+                            </form>
+                        }
+                        else
+                        {
+                            <div class="col-12">
+                                <a class="btn custom-button w-100" href="@Url.Action("Edit", "Offer", new { id = Model.Id })">Edit</a>
                             </div>
-                            <div class="col-8">
-                                <button type="submit" class="btn custom-button w-100 toCartButton" data-id="@Model.Id"> To Cart</button>
-                            </div>
-                        </form>
+                        }
                     }
-                    else
-                    {
-                        <div class="col-12">
-                            <a class="btn custom-button w-100" href="@Url.Action("Edit", "Offer", new { id = Model.Id })">Edit</a>
-                        </div>
-                    }
-
                 </div>
                 <p class="mt-2">Available: @Model.StockQuantity</p>
-                <hr/>
+                <hr />
                 <p>
                     <strong>Delivery Types</strong>
                 </p>
@@ -110,13 +123,13 @@
                         </label>
                     </div>
                 }
-                <hr/>
+                <hr />
 
                 <p>
                     <strong>Sender Location</strong>
                 </p>
-                <strong>Place:</strong> @Model.Place <br/>
-                <strong>Postal City:</strong> @Model.PostalCity <br/>
+                <strong>Place:</strong> @Model.Place <br />
+                <strong>Postal City:</strong> @Model.PostalCity <br />
                 <strong>Postal Code:</strong> @Model.PostalCode
             </div>
         </div>
@@ -165,13 +178,31 @@
             });
         });
 
-        $(document).on('click', "#favouritesButton", function(e){
+        $(document).on('click', "#likeButton", function(e){
             e.preventDefault();
+
+            var btn = $(this);
+            var token = $('input[name="__RequestVerificationToken"]').val();
+            var offerId = btn.data('id');
+
             $.ajax({
-                url: '@Url.Action("LikeOffer", "Offer", new { id = Model.Id })',
-                type: 'GET',
+                url: '/Like/LikeOffer/' + offerId,
+                type: 'POST',
+                headers: { 'RequestVerificationToken': token },
                 success: function(response){
-                    showToast(response.message, response.success);
+                    let icon = btn.find('i');
+
+                    if(response.success){
+                        if(response.data.liked){
+                            icon.removeClass('fa-regular').addClass('fa-solid purple-text');
+                        }
+                        else{
+                            icon.removeClass('fa-solid purple-text').addClass('fa-regular');
+                        }
+                        showToast(response.data.message, true);
+                    } else {
+                        showToast(response.message, false);
+                    }
                 }
             });
         });

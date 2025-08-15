@@ -19,13 +19,15 @@ namespace CSOS.Core.Mappings.ToDto
             };
         }
         
-        public static OfferResponse ToOfferResponse(this Offer offer)
+        public static OfferResponse ToOfferResponse(this Offer offer, Guid? currentUserId)
         {
             return new OfferResponse()
             {
                 Id = offer.Id,
                 ProductCondition = offer.Product.Condition.ConditionTitle,
                 DateCreated = offer.DateCreated.Date,
+                IsLiked = currentUserId.HasValue && offer.LikedOffers
+                    .Any(lo => lo.UserId == currentUserId && lo.OfferId ==offer.Id && lo.IsActive),
                 Seller = offer.Seller.UserName!,
                 Description = offer.Product.Description,
                 ProductCategory = offer.Product.ProductCategory.Name,

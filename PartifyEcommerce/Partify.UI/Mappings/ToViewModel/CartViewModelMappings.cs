@@ -7,7 +7,7 @@ namespace CSOS.UI.Mappings.ToViewModel
 {
     public static class CartViewModelMappings
     {
-        public static CartViewModel ToCartViewModel(this CartResponseDto dto, IConfigurationReader configuration)
+        public static CartViewModel ToCartViewModel(this CartResponseDto dto, IPictureHandlerService pictureHandlerService)
         {
             return new CartViewModel()
             {
@@ -20,14 +20,13 @@ namespace CSOS.UI.Mappings.ToViewModel
                     Condition = item.Condition,
                     DateAdded = item.DateAdded,
                     Id = item.Id,
-                    ImageUrl = string.IsNullOrWhiteSpace(item.ImageUrl)
-                    ? configuration.DefaultPicturePlaceholder
-                    : item.ImageUrl,
+                    ImageUrl = pictureHandlerService.ReplaceImageIfNotFound(item.ImageUrl),
                     OfferId = item.OfferId,
                     Price = item.Price,
                     Quantity = item.Quantity,
                     Title = item.Title
-                }).ToList(),
+                })
+                .ToList(),
             };
         }
     }

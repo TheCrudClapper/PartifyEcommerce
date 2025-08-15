@@ -1,5 +1,4 @@
 ﻿using CSOS.UI.ViewModels.DeliveryTypeViewModels;
-using CSOS.UI.ViewModels.SharedViewModels;
 namespace CSOS.UI.ViewModels.OfferViewModels
 {
     public class OfferDetailsViewModel
@@ -17,6 +16,7 @@ namespace CSOS.UI.ViewModels.OfferViewModels
         public string PostalCode { get; set; } = null!;
         public string Place { get; set; } = null!;
         public decimal Price { get; set; }
+        public bool? IsLiked { get; set; }
 
         public List<string> ProductImages = new List<string>();
 

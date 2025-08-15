@@ -42,7 +42,7 @@ body {
 }
 
 .purple-text {
-    color: #863cb0;
+    color: #863cb0 !important;
 }
 
 .midesection-style {
@@ -206,23 +206,19 @@ body {
     color: #863cb0;
     text-decoration: underline;
 }
-.paginated-list {
-    list-style-type: none
-}
-.pagination-tile{
 
-}
-.favourites-button {
+.like-button-button {
     color: #25262b;
     background: none !important;
     border: none !important;
     box-shadow: none !important;
 }
 
-    .favourites-button:focus {
+    .like-button:focus {
         outline: none;
         box-shadow: none !important;
     }
-    .favourites-button:hover {
+
+    .like-button:hover {
         color: #863cb0;
     }

@@ -56,6 +56,7 @@ namespace CSOS.UI.Mappings.ToViewModel
                 }).ToList(),
                 ProductCondition = dto.ProductCondition,
                 Id = dto.Id,
+                IsLiked = dto.IsLiked,
                 Title = dto.Title,
                 Price = dto.Price,
                 DateCreated = dto.DateCreated,

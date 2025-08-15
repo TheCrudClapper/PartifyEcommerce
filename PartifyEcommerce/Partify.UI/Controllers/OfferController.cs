@@ -241,20 +241,5 @@ namespace CSOS.UI.Controllers
             var viewModel = filteredOffers.Select(item => item.ToOfferIndexItemViewModel(_pictureHandlerService));
             return PartialView("OfferPartials/_OfferListPartial", viewModel);
         }
-
-        [HttpGet]
-        public async Task<IActionResult> LikeOffer([FromRoute] int id)
-        {
-            var result = await _offerService.ToggleLike(id);
-
-            if (result.IsFailure)
-                return Json(new JsonResponseModel { Message = result.Error.Description, Success = false});
-
-            return Json(new JsonResponseModel<LikedOfferResponse>{
-                Success = true,
-                Message = result.Value.Message,
-                Data = result.Value
-            });
-        }
     }
 }

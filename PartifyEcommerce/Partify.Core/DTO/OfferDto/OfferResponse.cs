@@ -10,6 +10,7 @@ namespace CSOS.Core.DTO.OfferDto
         public string ProductCategory { get; set; } = null!;
         public bool IsSellerCompany { get; set; }
         public string Title { get; set; } = null!;
+        public bool? IsLiked { get; set; }
         public string Seller { get; set; } = null!;
         public int StockQuantity { get; set; }
         public string Description { get; set; } = null!;

@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Http;
 using System.Security.Claims;
 using CSOS.Core.ResultTypes;
 using Microsoft.AspNetCore.Identity;
+using System.Runtime.InteropServices;
 
 namespace CSOS.Core.Services
 {
@@ -29,6 +30,17 @@ namespace CSOS.Core.Services
             var user = await _userManager.FindByIdAsync(userId.ToString());
 
             return user != null ? Result.Success(user) : Result.Failure<ApplicationUser>(AccountErrors.AccountNotFound);
+        }
+
+        public Guid? GetCurrentUserIdOrNull()
+        {
+            var httpContext  = _httpContextAccessor.HttpContext;
+            var userIdClaim = httpContext?.User?.FindFirst(ClaimTypes.NameIdentifier);
+
+            if (userIdClaim == null || !Guid.TryParse(userIdClaim.Value, out var userId))
+                return null;
+
+            return userId;
         }
 
         public Guid GetUserId()

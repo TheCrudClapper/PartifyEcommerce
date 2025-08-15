@@ -7,66 +7,77 @@
 else
 {
     @foreach (var offer in Model)
-{
-    
-    <div class="col-12">
-        <div class="card mb-3 shadow p-3">
-            <div class="row">
-                <div class="col-md-4">
-                    <img src="@offer.ImageUrl" class="img-fluid offer-browser-image" alt="Product Image">
-                </div>
-                <div class="col-md-5 d-flex flex-column">
-                    <div>
+    {
 
-                        <a href="@Url.Action("Details", "Offer", new { id = offer.Id })" class="offer-link ">
-                            <h5 class="card-title mt-3 mt-md-0 fw-bold">@offer.ProductName</h5>
-                        </a>
-                        @for (int j = 0; j < 5; j++)
+        <div class="col-12">
+            <div class="card mb-3 shadow p-3">
+                <div class="row">
+                    <div class="col-md-4">
+                        <img src="@offer.ImageUrl" class="img-fluid offer-browser-image" alt="Product Image">
+                    </div>
+                    <div class="col-md-5 d-flex flex-column">
+                        <div>
+
+                            <a href="@Url.Action("Details", "Offer", new { id = offer.Id })" class="offer-link ">
+                                <h5 class="card-title mt-3 mt-md-0 fw-bold">@offer.ProductName</h5>
+                            </a>
+                            @for (int j = 0; j < 5; j++)
+                            {
+                                <i class="fa-solid fa-star"></i>
+                            }
+                        </div>
+                        <div>
+                            <ul class="ps-3 mb-0">
+                                <li><span class="fw-bold">Condition:</span> @offer.ProductCondition</li>
+                                <li><span class="fw-bold">Category:</span> @offer.ProductCategory</li>
+                                <li>
+                                    <span class="fw-bold">Added To Shop:</span> @offer.DateCreated.ToString("dd-MM-yyyy")
+                                </li>
+                                <li>
+                                    <div><span class="fw-bold">Description:</span></div>
+                                    <div class="description-preview">
+                                        @offer.Description
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="col-md-3 text-start d-flex flex-column justify-content-between">
+                        <h5 class="fw-bold mt-3 mt-md-0">Price: @offer.Price PLN</h5>
+                        <p>
+                            Sells and sends:
+                            <br><span class="fw-bold">@offer.Seller</span>
+                        </p>
+                        <p>
+                            Available: <span class="fw-bold">@offer.StockQuantity</span>
+                        </p>
+                        @if (User.Identity.IsAuthenticated)
                         {
-                            <i class="fa-solid fa-star"></i>
+                            @if (User.Identity?.Name != offer.Seller)
+                            {
+                                <form method="post">
+                                    @Html.AntiForgeryToken()
+                                    <button class="btn custom-button mt-2 w-100 addToCartButton" type="submit"
+                                            data-id="@offer.Id">
+                                        To Cart
+                                    </button>
+                                </form>
+                            }
+                            else
+                            {
+                                <a class="btn custom-button mt-2 w-100"
+                                   href="@Url.Action("Edit", "Offer", new { id = offer.Id })">Edit</a>
+                            }
+                        }
+                        else
+                        {
+                            <button class="btn custom-button disabled mt-2 w-100 addToCartButton">
+                                To Cart
+                            </button>
                         }
                     </div>
-                    <div>
-                        <ul class="ps-3 mb-0">
-                            <li><span class="fw-bold">Condition:</span> @offer.ProductCondition</li>
-                            <li><span class="fw-bold">Category:</span> @offer.ProductCategory</li>
-                            <li><span class="fw-bold">Added To Shop:</span> @offer.DateCreated.ToString("dd-MM-yyyy")
-                            </li>
-                            <li>
-                                <div><span class="fw-bold">Description:</span></div>
-                                <div class="description-preview">
-                                    @offer.Description
-                                </div>
-                            </li>
-                        </ul>
-                    </div>
-                </div>
-                <div class="col-md-3 text-start d-flex flex-column justify-content-between">
-                    <h5 class="fw-bold mt-3 mt-md-0">Price: @offer.Price PLN</h5>
-                    <p>
-                        Sells and sends:
-                        <br><span class="fw-bold">@offer.Seller</span>
-                    </p>
-                    <p>
-                        Available: <span class="fw-bold">@offer.StockQuantity</span>
-                    </p>
-                    @if (User.Identity?.Name != offer.Seller)
-                    {
-                        <form method="post">
-                            @Html.AntiForgeryToken()
-                            <button class="btn custom-button mt-2 w-100 addToCartButton" type="submit"
-                                    data-id="@offer.Id">To Cart
-                            </button>
-                        </form>
-                    }
-                    else
-                    {
-                        <a class="btn custom-button mt-2 w-100"
-                           href="@Url.Action("Edit", "Offer", new { id = offer.Id })">Edit</a>
-                    }
                 </div>
             </div>
         </div>
-    </div>
-}
+    }
 }

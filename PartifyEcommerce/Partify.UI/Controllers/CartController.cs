@@ -10,13 +10,14 @@ namespace CSOS.UI.Controllers
     public class CartController : Controller
     {
         private readonly ICartService _cartService;
+        private readonly IPictureHandlerService _pictureHandlerService;
         private readonly IConfigurationReader _configurationReader;
         private readonly ILogger<CartController> _logger;
 
-        public CartController(ICartService cartService, IConfigurationReader configurationReader, ILogger<CartController> logger)
+        public CartController(ICartService cartService, IPictureHandlerService pictureHandlerService , ILogger<CartController> logger)
         {
             _cartService = cartService;
-            _configurationReader = configurationReader;
+            _pictureHandlerService = pictureHandlerService;
             _logger = logger;
         }
 
@@ -34,7 +35,7 @@ namespace CSOS.UI.Controllers
             }
 
             _logger.LogInformation("Cart fetched for {UserName}. Total items: {ItemCount}", User.Identity!.Name, result.Value.CartItems.Count());
-            var cart = result.Value.ToCartViewModel(_configurationReader);
+            var cart = result.Value.ToCartViewModel(_pictureHandlerService);
             return View(cart);
         }
 

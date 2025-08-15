@@ -11,6 +11,7 @@ namespace CSOS.Infrastructure
     {
         public static IServiceCollection AddInfrastructureLayer(this IServiceCollection services)
         {
+            services.AddScoped<ILikeOfferRepository, LikeOfferRepository>();
             services.AddScoped<IOfferRepository, OfferRepository>();
             services.AddScoped<IOfferDeliveryTypeRepository, OfferDeliveryTypeRepository>();
             services.AddScoped<IProductRepository, ProductRepository>();
