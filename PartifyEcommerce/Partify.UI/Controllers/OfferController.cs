@@ -116,7 +116,7 @@ namespace CSOS.UI.Controllers
             }
 
 
-            var viewModel = response.Value.ToEditOfferViewModel();
+            var viewModel = response.Value.ToEditOfferViewModel(_pictureHandlerService);
             await _offerViewModelInitializer.InitializeAllAsync(viewModel);
             return View(viewModel);
         }

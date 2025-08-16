@@ -1,0 +1,9 @@
+﻿@using CSOS.Core.DTO.LikedOfferDto
+
+@model IEnumerable<LikedOfferResponse>;
+
+<div id="likedOfferResults">
+    @await Html.PartialAsync("OfferPartials/_LikedOfferListPartial", Model);
+</div>
+
+

@@ -24,6 +24,13 @@ namespace CSOS.Core.Domain.RepositoryContracts
         Task<LikedOffer?> GetLikedOfferAsync(int likedOffer, Guid userId);
 
         /// <summary>
+        /// Retrives all liked offers for specific user
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        Task<IEnumerable<Offer>> GetAllUserLikedOffersAsync(Guid userId, string? title);
+
+        /// <summary>
         /// Deactivates like for specific user and offer
         /// </summary>
         /// <param name="likedOffer"></param>

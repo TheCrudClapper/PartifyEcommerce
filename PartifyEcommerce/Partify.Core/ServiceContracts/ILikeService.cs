@@ -5,6 +5,8 @@ namespace CSOS.Core.ServiceContracts
 {
     public interface ILikeService
     {
-        Task<Result<LikeResponse>> ToggleLike(int offerId);
+        Task<Result<LikeResult>> ToggleLike(int offerId);
+
+        Task<Result<IEnumerable<LikedOfferResponse>>> GetFilteredUserLikedOffers(string? title);
     }
 }

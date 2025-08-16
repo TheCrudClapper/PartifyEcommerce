@@ -1,0 +1,6 @@
+﻿@using CSOS.Core.DTO.LikedOfferDto
+@model IEnumerable<LikedOfferResponse>
+@foreach (var item in Model)
+{
+    <span>Title: @item.Title</span>
+}

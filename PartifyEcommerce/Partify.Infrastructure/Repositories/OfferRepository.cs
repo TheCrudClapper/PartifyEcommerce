@@ -140,6 +140,7 @@ namespace CSOS.Infrastructure.Repositories
 
             return await query.ToListAsync();
         }
+
         public async Task<int> GetNonPrivateOfferCount()
         {
             return await _dbContext.Offers

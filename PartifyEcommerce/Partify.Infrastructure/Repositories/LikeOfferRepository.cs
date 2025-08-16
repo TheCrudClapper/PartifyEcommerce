@@ -43,5 +43,24 @@ namespace CSOS.Infrastructure.Repositories
             return await _dbContext.LikedOffers
                 .FirstOrDefaultAsync(item => item.OfferId == likedOfferId && item.UserId == userId);
         }
+
+        public async Task<IEnumerable<Offer>> GetAllUserLikedOffersAsync(Guid userId, string? title)
+        {
+            var query = _dbContext.LikedOffers
+                .Where(like => like.UserId == userId &&
+                    like.IsActive &&
+                    like.Offer.IsActive &&
+                    like.Offer.Product.IsActive)
+                .Include(like => like.Offer.Product)
+                .Select(like => like.Offer)
+                .AsQueryable();
+
+            if (!string.IsNullOrWhiteSpace(title))
+            {
+                query = query.Where(item => item.Product.ProductName.Contains(title));
+            }
+
+            return await query.ToListAsync();
+        }
     }
 }

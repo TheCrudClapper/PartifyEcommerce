@@ -1,14 +1,14 @@
 ﻿using CSOS.Core.Domain.InfrastructureServiceContracts;
 using CSOS.Core.DTO.OfferDto;
-using CSOS.UI.Mappings.Universal;
 using CSOS.UI.ViewModels.DeliveryTypeViewModels;
 using CSOS.UI.ViewModels.OfferViewModels;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace CSOS.UI.Mappings.ToViewModel
 {
     public static class OfferViewModelMappings
     {
-        public static EditOfferViewModel ToEditOfferViewModel(this EditOfferResponse dto)
+        public static EditOfferViewModel ToEditOfferViewModel(this EditOfferResponse dto, IPictureHandlerService pictureHandlerService)
         {
             return new EditOfferViewModel
             {
@@ -22,7 +22,12 @@ namespace CSOS.UI.Mappings.ToViewModel
                 SelectedProductCondition = dto.SelectedProductCondition,
                 StockQuantity = dto.StockQuantity,
                 SelectedProductCategory = dto.SelectedProductCategory,
-                ExistingImagesUrls = dto.ExistingImagesUrls.ToSelectListItem()
+                ExistingImagesUrls = dto.ExistingImagesUrls!.Select(item => new SelectListItem
+                {
+                    Text = item.Text,
+                    Value = pictureHandlerService.ReplaceImageIfNotFound(item.Value)
+                })
+                .ToList()
             };
         }
 

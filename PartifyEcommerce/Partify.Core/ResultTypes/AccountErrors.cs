@@ -2,6 +2,8 @@
 {
     public static class AccountErrors
     {
+        public static readonly Error UserIsNotLoggedIn = new Error(
+          "User.AccountNotFound", "Log in first to access this content");
 
         public static readonly Error AccountNotFound = new Error(
             "User.AccountNotFound", "Account of given id not found");

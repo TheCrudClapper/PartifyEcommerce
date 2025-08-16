@@ -57,6 +57,7 @@
                                         <li><a class="dropdown-item" asp-controller="Offer" asp-action="UserOffers"><i class="fa-solid fa-boxes-stacked me-2"></i> Your Offers</a></li>
                                         <li><a class="dropdown-item" asp-controller="Cart" asp-action="Index"><i class="fa-solid fa-bag-shopping me-2"></i> Cart </a></li>
                                         <li><a class="dropdown-item" asp-controller="Account" asp-action="AccountDetails"><i class="fa-solid fa-id-card me-2"></i> Profile</a></li>
+                                        <li><a class="dropdown-item" asp-controller="Like" asp-action="Index"><i class="fa-solid fa-heart me-2"></i>Favourites</a></li>
                                         @if (User.IsInRole("Admin"))
                                         {
                                             <li><a class="dropdown-item" asp-controller="Home" asp-area="Admin" asp-action="Index"><i class="fa-solid fa-user-tie me-2"></i>Admin Panel</a></li>  
