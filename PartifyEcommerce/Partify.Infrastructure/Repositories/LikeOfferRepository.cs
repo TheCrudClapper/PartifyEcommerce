@@ -41,6 +41,7 @@ namespace CSOS.Infrastructure.Repositories
         public async Task<LikedOffer?> GetLikedOfferAsync(int likedOfferId, Guid userId)
         {
             return await _dbContext.LikedOffers
+                .Include(item => item.Offer)
                 .FirstOrDefaultAsync(item => item.OfferId == likedOfferId && item.UserId == userId);
         }
 

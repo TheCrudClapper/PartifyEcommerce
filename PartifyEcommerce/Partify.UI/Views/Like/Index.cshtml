@@ -1,9 +1,10 @@
-﻿@using CSOS.Core.DTO.LikedOfferDto
-
-@model IEnumerable<LikedOfferResponse>;
-
+﻿@{
+    @using CSOS.Core.DTO.LikedOfferDto
+    ViewBag.Title = "LikedOffers";
+    @model IEnumerable<LikedOfferResponse>
+}
 <div id="likedOfferResults">
-    @await Html.PartialAsync("OfferPartials/_LikedOfferListPartial", Model);
+    @await Html.PartialAsync("OfferPartials/_LikedOfferListPartial", Model)
 </div>
 
 

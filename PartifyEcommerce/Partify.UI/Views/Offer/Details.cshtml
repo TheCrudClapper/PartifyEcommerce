@@ -19,16 +19,19 @@
                     <h2>@Model.Title</h2>
                     @if (User.Identity.IsAuthenticated)
                     {
-                        <button class="btn like-button" id="likeButton" data-id="@Model.Id">
-                            @if (Model.IsLiked == true)
-                            {
-                                <i class="fa-solid fa-heart purple-text fs-2"></i>
-                            }
-                            else
-                            {
-                                <i class="fa-regular fa-heart fs-2"></i>
-                            }
-                        </button>
+                        <form id="likeForm">
+                            @Html.AntiForgeryToken()
+                            <button class="btn like-button" id="likeButton" data-id="@Model.Id">
+                                @if (Model.IsLiked == true)
+                                {
+                                    <i class="fa-solid fa-heart purple-text fs-2"></i>
+                                }
+                                else
+                                {
+                                    <i class="fa-regular fa-heart fs-2"></i>
+                                }
+                            </button>
+                        </form>
                     }
                     else
                     {

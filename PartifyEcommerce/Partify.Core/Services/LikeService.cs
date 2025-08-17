@@ -9,16 +9,19 @@ namespace CSOS.Core.Services
 {
     public class LikeService : ILikeService
     {
+        private readonly IOfferRepository _offerRepository;
         private readonly ICurrentUserService _currentUserService;
         private readonly IUnitOfWork _unitOfWork;
         private readonly ILikeOfferRepository _likeOfferRepository;
         public LikeService(ICurrentUserService currentUserService,
             IUnitOfWork unitOfWork,
-            ILikeOfferRepository likeOfferRepository)
+            ILikeOfferRepository likeOfferRepository,
+            IOfferRepository offerRepository)
         {
             _currentUserService = currentUserService;
             _unitOfWork = unitOfWork;
             _likeOfferRepository = likeOfferRepository;
+            _offerRepository = offerRepository;
         }
 
         public async Task<Result<IEnumerable<LikedOfferResponse>>> GetFilteredUserLikedOffers(string? title)
@@ -35,6 +38,15 @@ namespace CSOS.Core.Services
         public async Task<Result<LikeResult>> ToggleLike(int offerId)
         {
             var userId = _currentUserService.GetUserId();
+
+            var offer = await _offerRepository.GetOfferByIdAsync(offerId);
+
+            if (offer == null)
+                return Result.Failure<LikeResult>(OfferErrors.OfferDoesNotExist);
+
+            if (offer.SellerId == userId)
+                return Result.Failure<LikeResult>(LikeOfferErrors.OwnOfferLiked);
+
             var existing = await _likeOfferRepository.GetLikedOfferAsync(offerId, userId);
 
             if (existing != null && existing.IsActive)
