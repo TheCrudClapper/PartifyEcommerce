@@ -14,8 +14,12 @@ namespace CSOS.UI.ViewModels.OfferViewModels
         public int Id { get; set; }
 
         //Uploaded images by user
-        public List<IFormFile> UploadedImages { get; set; } = null!;
+        [RequireAtLeastOneImage]
+        public List<IFormFile>? UploadedImages { get; set; }
         
+        //Count of images downloaded from db
+        public int ExistingImagesCount { get; set; }
+
         public List<string>? UploadedImagesUrls { get; set; }
 
         //Images taken from database

@@ -58,7 +58,7 @@ namespace CSOS.Core.Domain.RepositoryContracts
         /// <param name="id">The ID of the offer.</param>
         /// <param name="userId">The ID of the user.</param>
         /// <returns>The user's offer if found and active; otherwise, null.</returns>
-        Task<Offer?> GetUserOffersByIdAsync(int id, Guid userId);
+        Task<Offer?> GetUserOfferByIdAsync(int id, Guid userId);
 
         /// <summary>
         /// Retrieves a public offer with all related data such as product, images, seller, delivery options.

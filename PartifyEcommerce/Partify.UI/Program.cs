@@ -1,10 +1,6 @@
 using ComputerServiceOnlineShop.Entities.Models.IdentityEntities;
-using ComputerServiceOnlineShop.Services;
 using CSOS.Infrastructure;
-using CSOS.Core.Domain.InfrastructureServiceContracts;
 using CSOS.Core.Domain.RepositoryContracts;
-using CSOS.Core.ServiceContracts;
-using CSOS.Core.Services;
 using CSOS.Infrastructure.DbContext;
 using CSOS.Infrastructure.Repositories;
 using CSOS.UI.Helpers;

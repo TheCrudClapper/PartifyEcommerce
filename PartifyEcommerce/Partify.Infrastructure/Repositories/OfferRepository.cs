@@ -33,7 +33,7 @@ namespace CSOS.Infrastructure.Repositories
                 .FirstOrDefaultAsync(item => item.Id == id && item.IsActive);
         }
 
-        public async Task<Offer?> GetUserOffersByIdAsync(int offerId, Guid userId)
+        public async Task<Offer?> GetUserOfferByIdAsync(int offerId, Guid userId)
         {
             return await _dbContext.Offers
                 .FirstOrDefaultAsync(item => item.Id == offerId && item.SellerId == userId && item.IsActive == true);

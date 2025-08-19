@@ -7,5 +7,9 @@
 
         public static readonly Error ProductImagesAreEmpty = new Error(
            "ProductImage.ProductImagesAreEmpty", "Product images are empty");
+
+        public static Error GivenProductImageNotFound(string name) => new Error(
+            "ProductImage.GivenProductImageNotFound", $"Image of {name} not found, cannot delete");
+            
     }
 }

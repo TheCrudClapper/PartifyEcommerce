@@ -1,8 +1,6 @@
 ﻿using CSOS.Core.Domain.InfrastructureServiceContracts;
-using CSOS.Core.DTO.LikedOfferDto;
 using CSOS.Core.DTO.OfferDto;
 using CSOS.Core.Helpers;
-using CSOS.Core.ResultTypes;
 using CSOS.Core.ServiceContracts;
 using CSOS.UI.Helpers;
 using CSOS.UI.Mappings.ToDto;
@@ -115,7 +113,6 @@ namespace CSOS.UI.Controllers
                 return View("Error", response.Error.Description);
             }
 
-
             var viewModel = response.Value.ToEditOfferViewModel(_pictureHandlerService);
             await _offerViewModelInitializer.InitializeAllAsync(viewModel);
             return View(viewModel);
@@ -133,9 +130,8 @@ namespace CSOS.UI.Controllers
             {
                 _logger.LogWarning("Invalid model state. Errors: {Errors}",
                     string.Join(", ", ModelState.Values.SelectMany(item => item.Errors).Select(item => item.ErrorMessage)));
-
                 var images = await _productImageService.GetOfferPicturesAsync(viewModel.Id);
-                viewModel.ExistingImagesUrls = images.ToSelectListItem();
+                viewModel.ExistingImagesUrls = images.ToSelectListItemPicture(_pictureHandlerService);
                 await _offerViewModelInitializer.InitializeAllAsync(viewModel);
                 return View(viewModel);
             }

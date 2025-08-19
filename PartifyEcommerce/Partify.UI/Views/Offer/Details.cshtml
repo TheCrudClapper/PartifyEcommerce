@@ -17,6 +17,8 @@
                 <span class="mb-2"><span class="fw-bold">Created: </span>@Model.DateCreated.ToString("dd-MM-yyyy")</span>
                 <div class="d-flex justify-content-between">
                     <h2>@Model.Title</h2>
+
+                    @* Generating favourites button  *@
                     @if (User.Identity.IsAuthenticated)
                     {
                         <form id="likeForm">
@@ -42,6 +44,7 @@
 
                 </div>
 
+                @* Generating static stars *@
                 @for (int i = 0; i < 5; i++)
                 {
                     <i class="fa-solid fa-star"></i>
@@ -49,15 +52,16 @@
                 <div class="image-container mt-3 mb-3">
                     <div id="carouselExample" class="carousel slide">
                         <div class="carousel-inner">
-                            @for (int i = 0; i < Model.ProductImages.Count; i++)
+                            @* Generating images with given iamge Url *@
+                            @foreach (var image in Model.ProductImages)
                             {
-                                var isActive = i == 0 ? "active" : "";
-                                <div class="carousel-item @isActive">
-                                    <img src="@Url.Content(Model.ProductImages[i])" class="d-block w-100" alt="offer-image">
+                                <div class="carousel-item active">
+                                    <img src="@Url.Content(image)" class="d-block w-100" alt="offer-image">
                                 </div>
                             }
                         </div>
-                        @if (Model.ProductImages.Count > 1)
+
+                        @if (Model.ProductImages.Count() > 1)
                         {
                             <button class="carousel-control-prev" type="button" data-bs-target="#carouselExample" data-bs-slide="prev">
                                 <span class="carousel-control-prev-icon" aria-hidden="true"></span>

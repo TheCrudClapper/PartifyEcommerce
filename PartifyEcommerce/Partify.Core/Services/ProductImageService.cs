@@ -1,4 +1,5 @@
 ﻿using CSOS.Core.Domain.Entities;
+using CSOS.Core.Domain.InfrastructureServiceContracts;
 using CSOS.Core.Domain.RepositoryContracts;
 using CSOS.Core.DTO.UniversalDto;
 using CSOS.Core.Mappings.ToDto;

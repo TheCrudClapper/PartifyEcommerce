@@ -27,7 +27,8 @@ namespace CSOS.UI.Mappings.ToViewModel
                     Text = item.Text,
                     Value = pictureHandlerService.ReplaceImageIfNotFound(item.Value)
                 })
-                .ToList()
+                .ToList(),
+                ExistingImagesCount = dto.ExistingImagesUrls?.Count ?? 0,
             };
         }
 

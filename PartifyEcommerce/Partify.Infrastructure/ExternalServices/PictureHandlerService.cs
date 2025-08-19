@@ -103,5 +103,6 @@ namespace ComputerServiceOnlineShop.Services
             if (!Directory.Exists(dir))
                 Directory.CreateDirectory(dir);
         }
+
     }
 }

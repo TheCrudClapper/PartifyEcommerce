@@ -107,7 +107,7 @@ namespace CSOS.Core.Services
         public async Task<Result> DeleteOffer(int id)
         {
             Guid userId = _currentUserService.GetUserId();
-            var offer = await _offerRepo.GetUserOffersByIdAsync(id, userId);
+            var offer = await _offerRepo.GetUserOfferByIdAsync(id, userId);
 
             if (offer == null)
                 return Result.Failure(OfferErrors.OfferDoesNotExist);

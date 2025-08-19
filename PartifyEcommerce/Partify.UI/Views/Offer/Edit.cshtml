@@ -13,6 +13,7 @@
 
     <form asp-action="Edit" asp-controller="Offer" asp-route-id="@Model.Id"  method="post" enctype="multipart/form-data">
         @Html.AntiForgeryToken()
+        <input type="hidden" asp-for="ExistingImagesCount"/>
         <div class="col-md-12 d-flex justify-content-end">
         <div class="row">
             <div class="col-auto">
@@ -69,8 +70,7 @@
                     No images available.
                 </div>
             }
-
-            <span class="text-danger">@Html.ValidationMessage("ImagesDeletion")</span>
+            <span asp-validation-for="UploadedImages" class="text-danger d-inline mt-2"></span>
         </div>
 
         <div class="mb-3 midesection-style">

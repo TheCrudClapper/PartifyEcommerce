@@ -1,4 +1,5 @@
-﻿using CSOS.Core.DTO.UniversalDto;
+﻿using CSOS.Core.Domain.InfrastructureServiceContracts;
+using CSOS.Core.DTO.UniversalDto;
 using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace CSOS.UI.Mappings.Universal
@@ -17,6 +18,19 @@ namespace CSOS.UI.Mappings.Universal
                 Value = item.Value,
             })
             .ToList();
-        } 
+        }
+
+        public static List<SelectListItem> ToSelectListItemPicture(this IEnumerable<SelectListItemDto>? items, IPictureHandlerService pictureHandlerService)
+        {
+            if (items == null)
+                return new List<SelectListItem>();
+
+            return items.Select(item => new SelectListItem
+            {
+                Text = item.Text,
+                Value = pictureHandlerService.ReplaceImageIfNotFound(item.Value),
+            })
+            .ToList();
+        }
     }
 }
