@@ -1,7 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using CSOS.UI.CustomValidators;
 using CSOS.UI.ViewModels.DeliveryTypeViewModels;
-using CSOS.UI.ViewModels.SharedViewModels;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.Rendering;
 
@@ -21,7 +20,7 @@ namespace CSOS.UI.ViewModels.OfferViewModels
         [Required(ErrorMessage = "Product Category is required")]
         public string SelectedProductCategory { get; set; } = null!;
 
-        public bool IsOfferPrivate { get; set; }
+        public bool IsOfferPrivate { get; set; } = default!;
 
         [Required(ErrorMessage = "Product Condition is required")]
         public string SelectedProductCondition { get; set; } = null!;
@@ -34,10 +33,10 @@ namespace CSOS.UI.ViewModels.OfferViewModels
         [Range(1, double.MaxValue, ErrorMessage = "Quantity must be at least 1")]
         public int StockQuantity { get; set; }
 
-        //Holds selected value parcel lockers from database (radio buttons)
+        public List<IFormFile>? UploadedImages { get; set; }
         public int? SelectedParcelLocker { get; set; }
 
-        //Hold multiple selected deliveries 
+        //Holds multiple selected deliveries 
         [EmptyListValidator(ErrorMessage = "Those deliveries are required")]
         public List<int> SelectedOtherDeliveries { get; set; } = new List<int>();
 

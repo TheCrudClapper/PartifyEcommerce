@@ -12,6 +12,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
 using CSOS.Core;
+using CSOS.UI.Filters;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -44,8 +45,8 @@ builder.Services.AddInfrastructureLayer();
 builder.Services.AddCoreLayer();
 
 //Add Helper Classes
+builder.Services.AddScoped<ValidatePicturesFilter>();
 builder.Services.AddScoped<OfferViewModelInitializer>();
-builder.Services.AddScoped<PicturesValidatorHelper>();
 
 //Add Unit of Work
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();

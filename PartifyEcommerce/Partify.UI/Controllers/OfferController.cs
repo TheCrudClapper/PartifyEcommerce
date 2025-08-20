@@ -2,6 +2,7 @@
 using CSOS.Core.DTO.OfferDto;
 using CSOS.Core.Helpers;
 using CSOS.Core.ServiceContracts;
+using CSOS.UI.Filters;
 using CSOS.UI.Helpers;
 using CSOS.UI.Mappings.ToDto;
 using CSOS.UI.Mappings.ToViewModel;
@@ -55,6 +56,7 @@ namespace CSOS.UI.Controllers
         }
 
         [HttpPost]
+        [ServiceFilter(typeof(ValidatePicturesFilter))]
         public async Task<IActionResult> Create(AddOfferViewModel viewModel)
         {
             _logger.LogInformation("OfferControler - POST Create Method called");
@@ -67,15 +69,6 @@ namespace CSOS.UI.Controllers
                 await _offerViewModelInitializer.InitializeAllAsync(viewModel);
                 return View(viewModel);
             }
-
-            var pictureValidationResponse = PicturesValidatorHelper.ValidatePictureExtensions(viewModel.UploadedImages, _pictureHandlerService);
-            if (pictureValidationResponse != null)
-            {
-                _logger.LogError("Error while validating pictures submitted by {UserName}. Error {Error}",
-                    User.Identity?.Name, pictureValidationResponse);
-                ModelState.AddModelError("WrongFileType", pictureValidationResponse);
-            }
-
 
             if (!ModelState.IsValid)
             {
@@ -119,12 +112,10 @@ namespace CSOS.UI.Controllers
         }
 
         [HttpPost]
+        [ServiceFilter(typeof(ValidatePicturesFilter))]
         public async Task<IActionResult> Edit(EditOfferViewModel viewModel)
         {
             _logger.LogInformation("POST Edit called by user {User} with view model {@ViewModel}", User.Identity?.Name, viewModel);
-            var pictureValidationResponse = PicturesValidatorHelper.ValidatePictureExtensions(viewModel.UploadedImages, _pictureHandlerService);
-            if (pictureValidationResponse != null)
-                ModelState.AddModelError("WrongFileType", pictureValidationResponse);
 
             if (!ModelState.IsValid)
             {

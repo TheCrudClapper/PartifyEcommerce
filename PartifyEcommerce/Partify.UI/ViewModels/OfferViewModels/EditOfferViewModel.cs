@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace CSOS.UI.ViewModels.OfferViewModels
@@ -13,16 +14,11 @@ namespace CSOS.UI.ViewModels.OfferViewModels
         [FromRoute]
         public int Id { get; set; }
 
-        //Uploaded images by user
-        [RequireAtLeastOneImage]
-        public List<IFormFile>? UploadedImages { get; set; }
-        
         //Count of images downloaded from db
         public int ExistingImagesCount { get; set; }
 
-        public List<string>? UploadedImagesUrls { get; set; }
-
         //Images taken from database
+        [BindNever]
         public List<SelectListItem>? ExistingImagesUrls { get; set; } = new List<SelectListItem>();
 
         //Images selected by user for deletion
