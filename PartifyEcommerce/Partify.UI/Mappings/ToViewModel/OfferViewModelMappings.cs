@@ -14,7 +14,7 @@ namespace CSOS.UI.Mappings.ToViewModel
             {
                 Description = dto.Description,
                 Price = dto.Price,
-                Title = dto.ProductName,
+                ProductName = dto.ProductName,
                 Id = dto.Id,
                 IsOfferPrivate = dto.IsOfferPrivate,
                 SelectedOtherDeliveries = dto.SelectedOtherDeliveries,

@@ -1,4 +1,5 @@
 ﻿using CSOS.Core.Domain.InfrastructureServiceContracts;
+using CSOS.Core.ResultTypes;
 using Microsoft.AspNetCore.Http;
 namespace ComputerServiceOnlineShop.Services
 {
@@ -6,7 +7,6 @@ namespace ComputerServiceOnlineShop.Services
     {
         private string offerPicturesDirectory;
         private string categoriesPicturesDirectory;
-        private string response = "";
         private string[] allowedExtensions = new[] { ".jpg", ".jpeg", ".png" };
 
         private readonly IConfigurationReader _configurationReader;
@@ -17,7 +17,7 @@ namespace ComputerServiceOnlineShop.Services
             categoriesPicturesDirectory = _configurationReader.DefaultCategoryPicturesDirectory;
         }
 
-        public string CheckFileExtensions(List<IFormFile> uploadedImages)
+        public Result CheckFileExtensions(List<IFormFile> uploadedImages)
         {
             if (uploadedImages != null && uploadedImages.Count > 0)
             {
@@ -25,18 +25,13 @@ namespace ComputerServiceOnlineShop.Services
                 {
                     var extension = Path.GetExtension(image.FileName).ToLower();
                     if (!allowedExtensions.Contains(extension))
-                    {
-                        response = $"Images should be only in formats {string.Join(',', allowedExtensions)}";
-                        return response;
-                    }
+                        return Result.Failure(ProductImageErrors.WrongImageExtension(allowedExtensions));
                 }
             }
             else
-            {
-                response = $"Add at least one image in extendsion {string.Join(',', allowedExtensions)}";
-                return response;
-            }
-            return response = "OK";
+                return Result.Failure(ProductImageErrors.AddAtLeastOneImage(allowedExtensions));
+
+            return Result.Success();
         }
 
         public async Task<List<string>> SavePicturesToDirectory(List<IFormFile> uploadedImages)

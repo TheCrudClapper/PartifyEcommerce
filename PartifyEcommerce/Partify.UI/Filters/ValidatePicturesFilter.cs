@@ -16,47 +16,52 @@ namespace CSOS.UI.Filters
         }
         public void OnActionExecuting(ActionExecutingContext context)
         {
-            if(context.ActionArguments.TryGetValue("viewModel", out var arg) && arg is BaseOfferViewModel vm)
+            if (context.ActionArguments.TryGetValue("viewModel", out var arg) && arg is BaseOfferViewModel vm)
             {
                 switch (vm)
                 {
                     case AddOfferViewModel addVm:
                         if (addVm.UploadedImages == null)
-                        {
                             context.ModelState.AddModelError(nameof(addVm.UploadedImages), "You have to add at least one photo");
-                        }   
                         else
-                        {
-                            var extensionValidationResult = _pictureHandlerService.CheckFileExtensions(addVm.UploadedImages);
-                            if(extensionValidationResult != "OK")
-                                context.ModelState.AddModelError("WrongFileType", extensionValidationResult);
-                        }
+                            TryValidateUploadedImages(addVm, context);
                         break;
 
                     case EditOfferViewModel editVm:
-                        int remaining = editVm.ExistingImagesCount - (editVm.ImagesToDelete?.Count ?? 0);
-                        bool hasNew = editVm.UploadedImages != null && editVm.UploadedImages.Any();
+                        bool validationResult = TryValidateUploadedImages(editVm, context); ;
+                        bool hasAtLeastOneImage = HasAtLeastOneImage(editVm, validationResult);
 
-                        if (remaining < 1 && !hasNew)
-                        {
+                        if (!hasAtLeastOneImage)
                             context.ModelState.AddModelError(nameof(editVm.UploadedImages), "Offer must have at least one image left.");
-                        }
-
-                        if (editVm.UploadedImages != null)
-                        {
-                            var extensionValidationResult = _pictureHandlerService.CheckFileExtensions(editVm.UploadedImages);
-                            if (extensionValidationResult != "OK")
-                                context.ModelState.AddModelError("WrongFileType", extensionValidationResult);
-                        }
-
                         break;
                 }
 
             }
         }
+        private bool HasAtLeastOneImage(EditOfferViewModel vm, bool newImagesValid)
+        {
+            int remaining = vm.ExistingImagesCount - (vm.ImagesToDelete?.Count ?? 0);
+            bool hasNew = newImagesValid && vm.UploadedImages?.Any() == true;
+            return remaining > 0 || hasNew;
+        }
+        private bool TryValidateUploadedImages(BaseOfferViewModel viewModel, ActionExecutingContext context)
+        {
+            if (viewModel.UploadedImages != null)
+            {
+                var validationResult = _pictureHandlerService.CheckFileExtensions(viewModel.UploadedImages);
+                if (validationResult.IsFailure)
+                {
+                    context.ModelState.AddModelError("WrongFileType", validationResult.Error.Description);
+                    return false;
+                }
+                return true;
+            }
+            return false;
+        }
+
         public void OnActionExecuted(ActionExecutedContext context)
         {
-            
+
         }
     }
 }

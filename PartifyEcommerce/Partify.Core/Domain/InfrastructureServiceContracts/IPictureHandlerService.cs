@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using CSOS.Core.ResultTypes;
+using Microsoft.AspNetCore.Http;
 
 namespace CSOS.Core.Domain.InfrastructureServiceContracts
 {
@@ -22,9 +23,9 @@ namespace CSOS.Core.Domain.InfrastructureServiceContracts
         /// set of valid extensions. Ensure that the list contains only image files to avoid unexpected
         /// results.</remarks>
         /// <param name="uploadedImages">A list of uploaded files to validate. Each file must implement <see cref="IFormFile"/>.</param>
-        /// <returns>A string indicating the result of the validation. Returns an error message if any file has an invalid
+        /// <returns>A Result indicating the result of the validation. Returns an error message if any file has an invalid
         /// extension; otherwise, returns an empty string.</returns>
-        string CheckFileExtensions(List<IFormFile> uploadedImages);
+        Result CheckFileExtensions(List<IFormFile> uploadedImages);
 
         /// <summary>
         /// Replaces the specified image file path with a default placeholder if the file is not found.

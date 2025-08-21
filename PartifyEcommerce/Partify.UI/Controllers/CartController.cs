@@ -11,7 +11,6 @@ namespace CSOS.UI.Controllers
     {
         private readonly ICartService _cartService;
         private readonly IPictureHandlerService _pictureHandlerService;
-        private readonly IConfigurationReader _configurationReader;
         private readonly ILogger<CartController> _logger;
 
         public CartController(ICartService cartService, IPictureHandlerService pictureHandlerService , ILogger<CartController> logger)

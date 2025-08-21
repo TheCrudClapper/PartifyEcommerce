@@ -12,7 +12,7 @@ namespace CSOS.UI.Mappings.ToDto
                 Description = viewModel.Description,
                 IsOfferPrivate = viewModel.IsOfferPrivate,
                 Price = viewModel.Price,
-                ProductName = viewModel.Title,
+                ProductName = viewModel.ProductName,
                 SelectedOtherDeliveries = viewModel.SelectedOtherDeliveries,
                 SelectedParcelLocker = viewModel.SelectedParcelLocker,
                 UploadedImages = viewModel.UploadedImages,

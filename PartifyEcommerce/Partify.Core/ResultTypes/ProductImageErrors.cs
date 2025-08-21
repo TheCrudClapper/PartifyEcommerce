@@ -10,6 +10,11 @@
 
         public static Error GivenProductImageNotFound(string name) => new Error(
             "ProductImage.GivenProductImageNotFound", $"Image of {name} not found, cannot delete");
-            
+
+        public static Error WrongImageExtension(string[] allowedExtensions) => new Error(
+            "ProductImage.WrongImageExtension", $"Images should be only in formats {string.Join(',', allowedExtensions)}");
+
+        public static Error AddAtLeastOneImage(string[] allowedExtensions) => new Error(
+            "ProductImage.AddAtLeastOneImage", $"Add at least one image with allowed extensions: {string.Join(',', allowedExtensions)}");
     }
 }
