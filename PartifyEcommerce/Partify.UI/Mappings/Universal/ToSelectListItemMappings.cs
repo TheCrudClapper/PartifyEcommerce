@@ -1,4 +1,5 @@
-﻿using CSOS.Core.Domain.InfrastructureServiceContracts;
+﻿using ComputerServiceOnlineShop.Services;
+using CSOS.Core.Domain.InfrastructureServiceContracts;
 using CSOS.Core.DTO.UniversalDto;
 using Microsoft.AspNetCore.Mvc.Rendering;
 
@@ -27,8 +28,8 @@ namespace CSOS.UI.Mappings.Universal
 
             return items.Select(item => new SelectListItem
             {
-                Text = item.Text,
-                Value = pictureHandlerService.ReplaceImageIfNotFound(item.Value),
+                Text = pictureHandlerService.ReplaceImageIfNotFound(item.Value),
+                Value = item.Value,
             })
             .ToList();
         }

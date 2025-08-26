@@ -99,7 +99,7 @@ namespace CSOS.Core.Mappings.ToDto
                   .Where(item => item.IsActive)
                   .Select(item => new SelectListItemDto()
                   {
-                      Value = item.ImagePath,
+                      Value = item.Id.ToString(),
                       Text = item.ImagePath,
                   })
                   .ToList(),

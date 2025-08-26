@@ -16,7 +16,9 @@ namespace CSOS.UI.Mappings.ToDto
                 ProductName = viewModel.ProductName,
                 StockQuantity = viewModel.StockQuantity,
                 UploadedImages = viewModel.UploadedImages,
-                ImagesToDelete = viewModel.ImagesToDelete,
+                ImagesToDeleteIds = viewModel.ImagesToDeleteIds?
+                    .Where(item => int.TryParse(item, out _))
+                    .Select(int.Parse).ToList(),
                 SelectedParcelLocker = viewModel.SelectedParcelLocker,
                 SelectedProductCondition = int.Parse(viewModel.SelectedProductCondition),
                 SelectedProductCategory = int.Parse(viewModel.SelectedProductCategory),

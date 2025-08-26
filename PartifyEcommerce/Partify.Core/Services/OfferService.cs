@@ -84,13 +84,11 @@ namespace CSOS.Core.Services
             product.ProductCategoryId = updateRequest.SelectedProductCategory;
 
             //deletes images checked by user
-            if (updateRequest.ImagesToDelete?.Count > 0)
-            {
-                var result = _productImageService.DeleteImagesFromOffer(product.ProductImages, updateRequest.ImagesToDelete);
+            var pictureDeleteResult = _productImageService.DeleteImagesFromOffer(
+                product.ProductImages.Where(item => item.IsActive), updateRequest.ImagesToDeleteIds);
 
-                if (result.IsFailure)
-                    return Result.Failure(result.Error);
-            }
+            if (pictureDeleteResult.IsFailure)
+                return Result.Failure(pictureDeleteResult.Error);
 
             await SaveNewImagesAsync(updateRequest, product);
 

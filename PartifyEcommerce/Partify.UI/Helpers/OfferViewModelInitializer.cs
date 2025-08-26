@@ -33,8 +33,8 @@ namespace CSOS.UI.Helpers
             await PopulateCategories<TViewModel>(viewModel);
             await PopulateConditions<TViewModel>(viewModel);
 
-            if (viewModel is EditOfferViewModel editVm)
-                await GetOfferPicturseAsync(editVm);
+            //if (viewModel is EditOfferViewModel editVm)
+            //    await GetOfferPicturseAsync(editVm);
 
         }
 

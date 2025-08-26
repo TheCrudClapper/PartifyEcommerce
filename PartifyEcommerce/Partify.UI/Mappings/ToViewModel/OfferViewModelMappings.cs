@@ -24,8 +24,8 @@ namespace CSOS.UI.Mappings.ToViewModel
                 SelectedProductCategory = dto.SelectedProductCategory,
                 ExistingImagesUrls = dto.ExistingImagesUrls!.Select(item => new SelectListItem
                 {
-                    Text = item.Text,
-                    Value = pictureHandlerService.ReplaceImageIfNotFound(item.Value)
+                    Text = pictureHandlerService.ReplaceImageIfNotFound(item.Text),
+                    Value = item.Value,
                 })
                 .ToList(),
                 ExistingImagesCount = dto.ExistingImagesUrls?.Count ?? 0,

@@ -122,6 +122,7 @@ namespace CSOS.UI.Controllers
                 _logger.LogWarning("Invalid model state. Errors: {Errors}",
                     string.Join(", ", ModelState.Values.SelectMany(item => item.Errors).Select(item => item.ErrorMessage)));
                 await _offerViewModelInitializer.InitializeAllAsync(viewModel);
+                await _offerViewModelInitializer.GetOfferPicturseAsync(viewModel);
                 return View(viewModel);
             }
 

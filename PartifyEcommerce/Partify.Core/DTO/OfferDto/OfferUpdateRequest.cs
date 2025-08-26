@@ -12,11 +12,11 @@ namespace CSOS.Core.DTO.OfferDto
         public bool IsOfferPrivate { get; set; }
         public int SelectedProductCondition { get; set; }
         public List<IFormFile> UploadedImages { get; set; } = null!;
-        public List<string>? UploadedImagesUrls { get; set; }
+        public List<string> UploadedImagesUrls { get; set; } = null!;
         public decimal Price { get; set; }
         public int StockQuantity { get; set; }
         public List<int> SelectedOtherDeliveries { get; set; } = null!;
-        public List<string>? ImagesToDelete { get; set; } = new List<string>();
+        public List<int>? ImagesToDeleteIds { get; set; } = new List<int>();
         public int? SelectedParcelLocker { get; set; }
     }
 }

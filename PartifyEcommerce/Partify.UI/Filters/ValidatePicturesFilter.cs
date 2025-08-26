@@ -40,7 +40,7 @@ namespace CSOS.UI.Filters
         }
         private bool HasAtLeastOneImage(EditOfferViewModel vm, bool newImagesValid)
         {
-            int remaining = vm.ExistingImagesCount - (vm.ImagesToDelete?.Count ?? 0);
+            int remaining = vm.ExistingImagesCount - (vm.ImagesToDeleteIds?.Count ?? 0);
             bool hasNew = newImagesValid && vm.UploadedImages?.Any() == true;
             return remaining > 0 || hasNew;
         }

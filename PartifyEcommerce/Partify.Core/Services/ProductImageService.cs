@@ -1,5 +1,4 @@
 ﻿using CSOS.Core.Domain.Entities;
-using CSOS.Core.Domain.InfrastructureServiceContracts;
 using CSOS.Core.Domain.RepositoryContracts;
 using CSOS.Core.DTO.UniversalDto;
 using CSOS.Core.Mappings.ToDto;
@@ -23,19 +22,23 @@ namespace CSOS.Core.Services
             return items.Select(item => item.ToSelectListItem()).ToList();
         }
         
-        public Result DeleteImagesFromOffer(IEnumerable<ProductImage> images, IEnumerable<string> imageUrls)
+        public Result DeleteImagesFromOffer(IEnumerable<ProductImage> images, IEnumerable<int>? imageIds)
         {
             if (!images.Any())
                 return Result.Failure(ProductImageErrors.ProductImagesAreEmpty);
 
-            foreach (var imageToDelete in images)
+            if(imageIds != null)
             {
-                if (imageUrls.Any(url => imageToDelete.ImagePath.Contains(url, StringComparison.OrdinalIgnoreCase)))
+                foreach (var imageToDelete in images)
                 {
-                    imageToDelete.DateDeleted = DateTime.UtcNow;
-                    imageToDelete.IsActive = false;
+                    if (imageIds.Contains(imageToDelete.Id))
+                    {
+                        imageToDelete.DateDeleted = DateTime.UtcNow;
+                        imageToDelete.IsActive = false;
+                    }
                 }
             }
+
             return Result.Success();
         }
     }

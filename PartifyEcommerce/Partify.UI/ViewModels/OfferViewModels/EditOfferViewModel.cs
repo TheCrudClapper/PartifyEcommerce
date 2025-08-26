@@ -22,6 +22,6 @@ namespace CSOS.UI.ViewModels.OfferViewModels
         public List<SelectListItem>? ExistingImagesUrls { get; set; } = new List<SelectListItem>();
 
         //Images selected by user for deletion
-        public List<string>? ImagesToDelete { get; set; } = new List<string>();
+        public List<string>? ImagesToDeleteIds { get; set; } = new List<string>();
     }
 }
