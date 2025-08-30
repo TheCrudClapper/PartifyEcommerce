@@ -91,22 +91,31 @@
     box-shadow: 4px 4px 12px rgba(0, 0, 0, 0.1);
 }
 
-.category-img {
-    width: 100px;
+.category-img-wrapper {
+    width: 100px; 
     height: 100px;
-    object-fit: contain;
     border: 2px solid #e0e0e0;
-    padding: 5px;
+    border-radius: 50%; 
     background-color: white;
-    transition: transform 0.3s ease-in-out;
+    padding: 5px; 
+    display: flex; 
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.3s ease-in-out, border-color 0.3s;
     opacity: 0.9;
 }
 
-    .category-img:hover {
-        transform: scale(1.20);
+    .category-img-wrapper:hover {
+        transform: scale(1.2);
         border-color: #863cb0;
         opacity: 1;
     }
+
+.category-img {
+    max-width: 75%;
+    max-height: 75%;
+    object-fit: contain; 
+}
 
 .best-deals-container {
     background-image: url('/images/nebula.jpg');

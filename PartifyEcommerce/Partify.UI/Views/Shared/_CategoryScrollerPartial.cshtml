@@ -1,11 +1,14 @@
-﻿@model IEnumerable<CSOS.UI.ViewModels.HomePageViewModels.MainPageCardViewModel>
+﻿@using CSOS.UI.ViewModels.HomePageViewModels
+@model IEnumerable<MainPageCardViewModel>
 <div class="scrolling-wrapper midesection-style d-flex overflow-auto mt-3 pt-" id="categoryCarousel">
     @foreach (var category in Model)
     {
         <div class="col-6 col-sm-4 col-md-3 col-lg-2 flex-shrink-0 text-center">
             <a href="@Url.Action("Index", "Offer", new {CategoryId = category.Id})" class="text-decoration-none text-dark">
                 <div class="card border-0">
-                    <img src="@category.ImageUrl" class="rounded-circle category-img mx-auto d-block" alt="Category Image">
+                    <div class="category-img-wrapper mx-auto">
+                        <img src="@category.ImageUrl" class="category-img" alt="Category Image">
+                    </div>
                     <div class="card-body p-2">
                         <h6 class="fw-bold mb-1">@category.Title</h6>
                     </div>
