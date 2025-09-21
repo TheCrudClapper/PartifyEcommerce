@@ -37,11 +37,11 @@ namespace CSOS.Tests
             List<ProductImage> productImages = [];
             _productImageRepositoryMock.Setup(item => item.GetImagesFromOfferAsync(invalidOfferId))
                 .ReturnsAsync(productImages);
-            
+
             //Act
             List<SelectListItemDto> productImagesFromService = (await _productImageService.GetOfferPicturesAsync(invalidOfferId)).ToList();
-            
-          
+
+
             productImagesFromService.Should().BeEmpty();
             productImagesFromService.Should().AllBeOfType<List<SelectListItemDto>>();
         }
@@ -57,16 +57,16 @@ namespace CSOS.Tests
                 .ToList();
 
             _productImageRepositoryMock.Setup(item => item.GetImagesFromOfferAsync(offerId)).ReturnsAsync(productImages);
-            
+
             //Act
             List<SelectListItemDto> productImagesFromService = (await _productImageService.GetOfferPicturesAsync(offerId)).ToList();
-            
+
             //Assert
             productImagesFromService.Should().NotBeEmpty();
             productImagesFromService.Should().HaveCount(productImages.Count);
             productImagesFromService.Should().AllBeOfType<SelectListItemDto>();
         }
-        
+
         #endregion
 
         #region  DeleteImagesFromOffer Method Tests
@@ -75,12 +75,12 @@ namespace CSOS.Tests
         public void DeleteImagesFromOffer_EmptyProductImages_ReturnsFailureResult()
         {
             //Arrange
-            List<string> imageUrls = [];
+            IEnumerable<int>? imageIds = [];
             IEnumerable<ProductImage> productImages = _fixture.CreateMany<ProductImage>(0);
-            
+
             //Act
-            var result = _productImageService.DeleteImagesFromOffer(productImages, imageUrls);
-            
+            var result = _productImageService.DeleteImagesFromOffer(productImages, imageIds);
+
             //Assert
             result.IsFailure.Should().BeTrue();
             result.Error.Should().Be(ProductImageErrors.ProductImagesAreEmpty);
@@ -91,41 +91,40 @@ namespace CSOS.Tests
         {
             //Arrange
             //List holds image Urls to delete (deactivate)
-            List<string> imageUrls = new List<string>()
-            {
-                new string("test123/test123/1.png"),
-                new string("tescik/12/2.png"),
-            };
-            
+            int id0 = _fixture.Create<int>();
+            int id1 = _fixture.Create<int>();
+
+            IEnumerable<int>? imageIds = new[] { id0, id1 };
             //List holds testable images
             List<ProductImage> productImages = new List<ProductImage>()
             {
                 _fixture.Build<ProductImage>()
-                    .With(item => item.ImagePath, imageUrls[0] )
+                    .With(item => item.Id, id0)
+                    .With(item => item.ImagePath, _fixture.Create<string>() )
                     .With(item => item.IsActive, true)
                     .Without(item => item.DateDeleted)
                     .Without(item => item.Product)
                     .Create(),
-                
+
                 _fixture.Build<ProductImage>()
-                    .With(item => item.ImagePath, imageUrls[1] )
+                    .With(item => item.Id, id1)
+                    .With(item => item.ImagePath, _fixture.Create<string>())
                     .With(item => item.IsActive, true)
                     .Without(item => item.DateDeleted)
                     .Without(item => item.Product)
                     .Create(),
             };
 
-            
             //Act
-            var result = _productImageService.DeleteImagesFromOffer(productImages, imageUrls);
-            
+            var result = _productImageService.DeleteImagesFromOffer(productImages, imageIds);
+
             //Assert
             result.IsSuccess.Should().BeTrue();
             productImages.ForEach(item => item.IsActive.Should().BeFalse());
             productImages.ForEach(item => item.DateDeleted.Should().NotBeNull());
         }
         #endregion
-        
+
     }
 }
 

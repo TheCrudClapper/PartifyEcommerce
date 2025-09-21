@@ -21,6 +21,8 @@ namespace CSOS.Tests
         private CartController _cartController = null!;
         private readonly IConfigurationReader _configurationReader;
         private readonly Mock<ICartService> _cartServiceMock;
+        private readonly IPictureHandlerService _pictureHandlerService;
+        private readonly Mock<IPictureHandlerService> _pictureHandlerServiceMock;
         private readonly Mock<IConfigurationReader> _configurationReaderMock;
         private readonly IFixture _fixture;
         private readonly ILogger<CartController> _logger;
@@ -29,15 +31,17 @@ namespace CSOS.Tests
         {
             _cartServiceMock = new Mock<ICartService>();
             _configurationReaderMock = new Mock<IConfigurationReader>();
+            _pictureHandlerServiceMock = new Mock<IPictureHandlerService>();
             _cartService = _cartServiceMock.Object;
             _configurationReader = _configurationReaderMock.Object;
             _logger = Mock.Of<ILogger<CartController>>();
+            _pictureHandlerService = _pictureHandlerServiceMock.Object;
             _fixture = new Fixture();
         }
 
         public CartController CreateController()
         {
-            var controller = new CartController(_cartService, _configurationReader, _logger);
+            var controller = new CartController(_cartService, _pictureHandlerService, _logger);
 
             var user = new ClaimsPrincipal(new ClaimsIdentity(new Claim[]
             {
@@ -83,7 +87,7 @@ namespace CSOS.Tests
 
             //Assert
             ViewResult viewResult = result.Should().BeOfType<ViewResult>().Subject;
-            viewResult.ViewData.Model.Should().BeEquivalentTo(cartResponseDto.ToCartViewModel(_configurationReader));
+            viewResult.ViewData.Model.Should().BeEquivalentTo(cartResponseDto.ToCartViewModel(_pictureHandlerService));
         }
 
         #endregion

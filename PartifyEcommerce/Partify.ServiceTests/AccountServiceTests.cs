@@ -38,7 +38,7 @@ namespace CSOS.Tests
                 Mock.Of<IdentityErrorDescriber>(),
                 Mock.Of<IServiceProvider>(),
                 Mock.Of<ILogger<UserManager<ApplicationUser>>>());
-            
+
             var signInManager = new SignInManager<ApplicationUser>(
                 userManager,
                 Mock.Of<IHttpContextAccessor>(),
@@ -48,6 +48,15 @@ namespace CSOS.Tests
                 Mock.Of<IAuthenticationSchemeProvider>(),
                 Mock.Of<IUserConfirmation<ApplicationUser>>());
 
+            var roleManager = new RoleManager<ApplicationRole>(
+                Mock.Of<IRoleStore<ApplicationRole>>(),
+                new List<IRoleValidator<ApplicationRole>> { new RoleValidator<ApplicationRole>() },
+                Mock.Of<ILookupNormalizer>(),
+                new IdentityErrorDescriber(),
+                Mock.Of<ILogger<RoleManager<ApplicationRole>>>()
+            );
+
+
             _fixture = new Fixture();
 
             _accountService = new AccountService(
@@ -56,7 +65,13 @@ namespace CSOS.Tests
                 _currentUserServiceMock.Object,
                 _accountRepoMock.Object,
                 _unitOfWorkMock.Object,
-                _addressServiceMock.Object);
+                _addressServiceMock.Object,
+                 roleManager);
+
+            //_fixture.Behaviors.OfType<ThrowingRecursionBehavior>().ToList()
+            // .ForEach(b => _fixture.Behaviors.Remove(b));
+            //_fixture.Behaviors.Add(new OmitOnRecursionBehavior());
+
         }
 
         #region GetAccountForEdit Method Tests
@@ -84,6 +99,7 @@ namespace CSOS.Tests
                 .Without(item => item.Address)
                 .Without(item => item.Offers)
                 .Without(item => item.Cart)
+                .Without(item => item.LikedOffers)
                 .Create();
 
             _currentUserServiceMock.Setup(item => item.GetCurrentUserAsync()).ReturnsAsync(applicationUser);
@@ -101,7 +117,7 @@ namespace CSOS.Tests
             result.Value.FirstName.Should().Be(applicationUser.FirstName);
         }
         #endregion
-        
+
         #region EditUserAddress Method Tests
 
         [Fact]
@@ -110,10 +126,10 @@ namespace CSOS.Tests
             //Arrange 
             AccountUpdateRequest dto = _fixture.Create<AccountUpdateRequest>();
             _currentUserServiceMock.Setup(item => item.GetCurrentUserAsync()).ReturnsAsync(Result.Failure<ApplicationUser>(AccountErrors.AccountNotFound));
-            
+
             //Act
             var result = await _accountService.Edit(dto);
-            
+
             //Assert
             result.IsFailure.Should().BeTrue();
             result.Error.Should().Be(AccountErrors.AccountNotFound);
@@ -125,16 +141,19 @@ namespace CSOS.Tests
             //Arrange
             AccountUpdateRequest dto = _fixture.Create<AccountUpdateRequest>();
             ApplicationUser applicationUser = _fixture.Build<ApplicationUser>()
-                .Without(item => item.Address).Without(item => item.Offers)
+                .Without(item => item.Address)
+                .Without(item => item.Offers)
                 .Without(item => item.Cart)
+                .Without(item => item.LikedOffers)
                 .Create();
+
             _currentUserServiceMock.Setup(item => item.GetCurrentUserAsync()).ReturnsAsync(Result.Success(applicationUser));
             _unitOfWorkMock.Setup(item => item.SaveChangesAsync(CancellationToken.None)).ReturnsAsync(1);
-            
+
             //Act
             var result = await _accountService.Edit(dto);
-            
-            //
+
+            //Assert
             result.IsSuccess.Should().BeTrue();
             applicationUser.PhoneNumber.Should().Be(dto.PhoneNumber);
             applicationUser.Title.Should().Be(dto.Title);
