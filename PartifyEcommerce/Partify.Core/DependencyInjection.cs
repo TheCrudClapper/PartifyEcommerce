@@ -8,6 +8,9 @@ namespace CSOS.Core
     {
         public static IServiceCollection AddCoreLayer(this IServiceCollection services)
         {
+            // -----------------------------
+            // Services
+            // -----------------------------
             services.AddScoped<ILikeService, LikeService>();
             services.AddScoped<ICurrentUserService, CurrentUserService>();
             services.AddScoped<IAccountService, AccountService>();

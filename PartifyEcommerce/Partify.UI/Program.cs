@@ -1,22 +1,22 @@
-using ComputerServiceOnlineShop.Entities.Models.IdentityEntities;
 using CSOS.Infrastructure;
 using CSOS.Core.Domain.RepositoryContracts;
-using CSOS.Infrastructure.DbContext;
 using CSOS.Infrastructure.Repositories;
 using CSOS.UI.Helpers;
 using CSOS.UI.Middleware;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.HttpLogging;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using Serilog;
 using CSOS.Core;
 using CSOS.UI.Filters;
 
+//Third Party
+using Serilog;
+
 var builder = WebApplication.CreateBuilder(args);
 
-//Add Serilog
+// -----------------------------
+// Logging Configuration
+// -----------------------------
 builder.Host.UseSerilog((context, loggerConfig) =>
     loggerConfig.ReadFrom.Configuration(context.Configuration)
 );
@@ -27,30 +27,30 @@ builder.Services.AddHttpLogging(options =>
                             | HttpLoggingFields.ResponsePropertiesAndHeaders;
 });
 
-// Add DbContext
-builder.Services.AddDbContext<DatabaseContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("ComputerServiceOnlineShop"),
-        migrations => migrations.MigrationsAssembly("Partify.Infrastructure")));
+// -----------------------------
+// Infrastructure Layer
+// -----------------------------
+builder.Services.AddInfrastructureLayer(builder.Configuration);
 
-
-//Enabling identity
-builder.Services.AddIdentity<ApplicationUser, ApplicationRole>()
-    .AddEntityFrameworkStores<DatabaseContext>()
-    .AddDefaultTokenProviders();
-
-//Add Infrastructure Layer
-builder.Services.AddInfrastructureLayer();
-
-// Add Core Layer
+// -----------------------------
+// Core Layer
+// -----------------------------
 builder.Services.AddCoreLayer();
 
-//Add Helper Classes
+// -----------------------------
+// Helpers / Filters
+// -----------------------------
 builder.Services.AddScoped<ValidatePicturesFilter>();
 builder.Services.AddScoped<OfferViewModelInitializer>();
 
-//Add Unit of Work
+// -----------------------------
+// Unit of Work
+// -----------------------------
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
+// -----------------------------
+// Authorization Policies
+// -----------------------------
 builder.Services.AddAuthorization(options =>
 {
     //enforces authorization policy (user must be authenticated)
@@ -67,6 +67,9 @@ builder.Services.AddAuthorization(options =>
     });
 });
 
+// -----------------------------
+// Identity / Cookie Settings
+// -----------------------------
 builder.Services.ConfigureApplicationCookie(options =>
 {
     options.LoginPath = "/Account/Login";
@@ -77,6 +80,9 @@ builder.Services.ConfigureApplicationCookie(options =>
     options.Cookie.HttpOnly = true;
 });
 
+// -----------------------------
+// Session & Anti-forgery
+// -----------------------------
 builder.Services.AddSession(options =>
 {
     options.Cookie.HttpOnly = true;
@@ -100,8 +106,9 @@ builder.Services.AddControllersWithViews(options =>
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
-
+// -----------------------------
+// Logging & Error Handling
+// -----------------------------
 app.UseSerilogRequestLogging();
 if (app.Environment.IsDevelopment())
 {
@@ -113,28 +120,47 @@ else
     app.UseExceptionHandlingMiddleware();
 }
 
-app.UseStaticFiles();
 
+// -----------------------------
+// Security & Static Files
+// -----------------------------
 app.UseHsts();
 app.UseHttpsRedirection();
+app.UseStaticFiles();
 
+
+// -----------------------------
+// Request Logging
+// -----------------------------
 app.UseHttpLogging();
 
-app.UseRouting();
 
+// -----------------------------
+// Routing & Authentication
+// -----------------------------
+app.UseRouting();
 app.UseAuthentication(); //reads auth cookie and can extract data from it
 app.UseAuthorization(); //validates access permissions of the user
 
+
+// -----------------------------
+// Session
+// -----------------------------
 app.UseSession();
 
-//Controllers for Admin Role
+
+// -----------------------------
+// Controller Routes
+// -----------------------------
 app.MapControllerRoute(
     name: "areas",
       pattern: "{area:exists}/{controller=Home}/{action=Index}/{id?}");
 
-//Root controllers
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
 
+// -----------------------------
+// Run Application
+// -----------------------------
 app.Run();
