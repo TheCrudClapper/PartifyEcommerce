@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
 		<TargetFramework>net8.0</TargetFramework>
@@ -23,8 +23,8 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <ProjectReference Include="..\Partify.ControllerTestss\Partify.ControllerTestss.csproj" />
-	  <ProjectReference Include="..\Partify.Core\Partify.Core.csproj" />
+		<ProjectReference Include="..\..\src\Partify.Core\Partify.Core.csproj" />
+		<ProjectReference Include="..\..\src\Partify.UI\Partify.UI.csproj" />
 	</ItemGroup>
 
 	<ItemGroup>

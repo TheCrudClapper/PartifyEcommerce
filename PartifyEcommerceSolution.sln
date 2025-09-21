@@ -3,19 +3,19 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.13.35825.156
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Partify.UI", "Partify.UI\Partify.UI.csproj", "{B6D63733-DA9E-4B25-922A-CF789ABC362B}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Partify.UI", "src\Partify.UI\Partify.UI.csproj", "{B6D63733-DA9E-4B25-922A-CF789ABC362B}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{02EA681E-C7D8-13C7-8484-4AC65E1B71E8}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{48F8D270-774F-4FAA-BC2E-DE7F9254B946}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Partify.Core", "Partify.Core\Partify.Core.csproj", "{C5150471-6711-4B37-A1DC-4E5ED77677FC}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Partify.Core", "src\Partify.Core\Partify.Core.csproj", "{C5150471-6711-4B37-A1DC-4E5ED77677FC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Partify.Infrastructure", "Partify.Infrastructure\Partify.Infrastructure.csproj", "{F106157F-0D96-4840-8740-35D91CD1F898}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Partify.Infrastructure", "src\Partify.Infrastructure\Partify.Infrastructure.csproj", "{F106157F-0D96-4840-8740-35D91CD1F898}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Partify.ControllerTestss", "Partify.ControllerTestss\Partify.ControllerTestss.csproj", "{7F499EB9-88FE-41A8-B696-B0FE62EC63AE}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Partify.ControllerTestss", "tests\Partify.ControllerTestss\Partify.ControllerTestss.csproj", "{7F499EB9-88FE-41A8-B696-B0FE62EC63AE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Partify.ServiceTests", "Partify.ServiceTests\Partify.ServiceTests.csproj", "{EB53AA14-27CC-4274-8506-667FA63E90AB}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Partify.ServiceTests", "tests\Partify.ServiceTests\Partify.ServiceTests.csproj", "{EB53AA14-27CC-4274-8506-667FA63E90AB}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
