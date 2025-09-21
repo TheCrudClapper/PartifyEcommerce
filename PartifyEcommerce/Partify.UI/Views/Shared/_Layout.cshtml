@@ -28,7 +28,7 @@
 
                     @* Search bar and category select *@
                     <div class="col-lg-7 my-auto">
-                        <form role="search" asp-controller="Offer" asp-action="Index" method="get">
+                        <form role="search" asp-area="" asp-controller="Offer" asp-action="Index" method="get">
                             <div class="input-group">
                                 <input type="search" name="SearchPhrase" value="@Context.Request.Query["SearchPhrase"]" placeholder="Explore Partify" class="form-control" />
                                 @await Component.InvokeAsync("CategoryDropdown")
@@ -53,11 +53,11 @@
                                         <i class="fa fa-user"></i> Account
                                     </a>
                                     <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                                        <li><a class="dropdown-item" asp-controller="Offer" asp-action="Create"><i class="fa-solid fa-plus me-2 list-icons"></i> Add Offer</a></li>
-                                        <li><a class="dropdown-item" asp-controller="Offer" asp-action="UserOffers"><i class="fa-solid fa-boxes-stacked me-2"></i> Your Offers</a></li>
-                                        <li><a class="dropdown-item" asp-controller="Cart" asp-action="Index"><i class="fa-solid fa-bag-shopping me-2"></i> Cart </a></li>
-                                        <li><a class="dropdown-item" asp-controller="Account" asp-action="AccountDetails"><i class="fa-solid fa-id-card me-2"></i> Profile</a></li>
-                                        <li><a class="dropdown-item" asp-controller="Like" asp-action="Index"><i class="fa-solid fa-heart me-2"></i>Favourites</a></li>
+                                        <li><a class="dropdown-item" asp-area="" asp-controller="Offer" asp-action="Create"><i class="fa-solid fa-plus me-2 list-icons"></i> Add Offer</a></li>
+                                        <li><a class="dropdown-item" asp-area="" asp-controller="Offer" asp-action="UserOffers"><i class="fa-solid fa-boxes-stacked me-2"></i> Your Offers</a></li>
+                                        <li><a class="dropdown-item" asp-area="" asp-controller="Cart" asp-action="Index"><i class="fa-solid fa-bag-shopping me-2"></i> Cart </a></li>
+                                        <li><a class="dropdown-item" asp-area="" asp-controller="Account" asp-action="AccountDetails"><i class="fa-solid fa-id-card me-2"></i> Profile</a></li>
+                                        <li><a class="dropdown-item" asp-area="" asp-controller="Like" asp-action="Index"><i class="fa-solid fa-heart me-2"></i>Favourites</a></li>
                                         @if (User.IsInRole("Admin"))
                                         {
                                             <li><a class="dropdown-item" asp-controller="Home" asp-area="Admin" asp-action="Index"><i class="fa-solid fa-user-tie me-2"></i>Admin Panel</a></li>  
