@@ -36,7 +36,8 @@ namespace CSOS.UI.Controllers
             if(result.IsFailure)
                 return View("Error", result.Error.Description);
 
-            return View(result.Value);
+            //return View(result.Value);
+            return View("Error", "This module is still under development");
         }
 
         [HttpGet]

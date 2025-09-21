@@ -10,7 +10,7 @@ namespace CSOS.UI.Areas.Admin.Controllers
         [HttpGet]
         public IActionResult Index()
         {
-            return View();
+            return View("Error", "This module is still under development");
         }
     }
 }

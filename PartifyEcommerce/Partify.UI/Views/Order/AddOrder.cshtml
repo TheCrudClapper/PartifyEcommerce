@@ -5,8 +5,12 @@
 @section Styles {
     <link rel="stylesheet" href="~/css/auction-styles.css" asp-append-version="true" />
 }
+
 <div id="modalContainer"></div>
 <div class="container mt-3">
+    <div class="alert alert-danger" role="alert">
+        This module is still in building phase. Do not expect it to work properly !
+    </div>
     <div class="row g-3">
         <div class="col-12 col-lg-8">
             <div class="mb-3 midesection-style shadow">
@@ -126,7 +130,7 @@
             </div>
             <div class="row mt-1">
                 <div class="col-12 d-flex justify-content-between">
-                    <span>Delivery from</span>
+                    <span>Delivery cost</span>
 
                 </div>
             </div>
@@ -134,12 +138,12 @@
             <div class="row">
                 <div class="col-12 d-flex justify-content-between">
                     <span class="fw-bold">Total</span>
-                    <h4 class="fw-bold">4000,0PLN</h4>
+                    <h4 class="fw-bold">0 PLN</h4>
                 </div>
             </div>
 
             <div class="row">
-                <a asp-action="AddOrder" asp-controller="Order" class=" btn custom-button w-100 fw-bold">Place Order</a>
+                <a asp-action="AddOrder" asp-controller="Order" class="disabled btn custom-button w-100 fw-bold">Place Order</a>
             </div>
         </div>
     </div>
