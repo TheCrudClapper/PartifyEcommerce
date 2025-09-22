@@ -2,10 +2,10 @@
 
 #nullable disable
 
-namespace ComputerServiceOnlineShop.Migrations
+namespace CSOS.Infrastructure.Migrations
 {
     /// <inheritdoc />
-    public partial class OfferChangesMigration : Migration
+    public partial class InitialPostgressMigration : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)

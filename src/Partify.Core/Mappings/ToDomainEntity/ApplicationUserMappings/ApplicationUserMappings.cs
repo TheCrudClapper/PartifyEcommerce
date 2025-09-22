@@ -14,7 +14,7 @@ namespace CSOS.Core.Mappings.ToDomainEntity.ApplicationUserMappings
                 Surname = request.Surname,
                 UserName = request.Email,
                 Cart = cart,
-                DateCreated = DateTime.Now,
+                DateCreated = DateTime.UtcNow,
                 IsActive = true,
                 Email = request.Email,
             };

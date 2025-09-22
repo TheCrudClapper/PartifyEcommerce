@@ -1,0 +1,41 @@
+services:
+
+  #Main Application Container
+  partify.ui:
+    image: ${DOCKER_REGISTRY-}partifyui
+    build:
+      context: .
+      dockerfile: src/Partify.UI/Dockerfile
+    depends_on: 
+     - postgres-db
+    ports:
+     - "5010:8080"  
+     - "5011:8081"
+    environment:
+        - ASPNETCORE_ENVIRONMENT=Development
+        - ASPNETCORE_HTTPS_PORTS=8081
+        - ASPNETCORE_HTTP_PORTS=8080
+        - DB_HOST=postgres-db
+        - DB_PORT=5432
+        - DB_USER=postgres
+        - DB_NAME=PartifyEcommerceDb
+        - DB_PASSWORD=admin
+    networks:
+        - internal-network
+
+  #Postgres Database Container
+  postgres-db:
+    image: postgres:latest
+    environment:
+        - POSTGRES_PASSWORD=admin
+        - POSTGRES_USER=postgres
+        - POSTGRES_DB=PartifyEcommerceDb
+    ports:
+        - "5998:5432"
+    networks:
+        - internal-network
+
+# Networks
+networks:
+  internal-network:
+    driver: bridge

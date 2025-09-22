@@ -20,8 +20,24 @@ namespace CSOS.Infrastructure
             // Db Context Config
             // -----------------------------
             services.AddDbContext<DatabaseContext>(options =>
-            options.UseSqlServer(configuration.GetConnectionString("ComputerServiceOnlineShop"),
-                migrations => migrations.MigrationsAssembly("Partify.Infrastructure")));
+            {
+                options.UseNpgsql(configuration.GetConnectionString("Default")!
+               .Replace("$DB_HOST", configuration["DB_HOST"])
+               .Replace("$DB_PORT", configuration["DB_PORT"])
+               .Replace("$DB_PASSWORD", configuration["DB_PASSWORD"])
+               .Replace("$DB_NAME", configuration["DB_NAME"])
+               .Replace("$DB_USER", configuration["DB_USER"]),
+               x =>
+               {
+                   x.EnableRetryOnFailure(
+                       maxRetryCount: 5,
+                       maxRetryDelay: TimeSpan.FromSeconds(10),
+                       errorCodesToAdd: null
+                       );
+                   x.MigrationsAssembly("Partify.Infrastructure");
+               });
+            });
+
 
             // -----------------------------
             // Identity Config
