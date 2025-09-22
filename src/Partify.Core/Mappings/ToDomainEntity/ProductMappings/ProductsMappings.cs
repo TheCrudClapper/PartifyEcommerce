@@ -15,12 +15,11 @@ namespace CSOS.Core.Mappings.ToDomainEntity.ProductMappings
                 ConditionId = dto.SelectedProductCondition,
                 ProductCategoryId = dto.SelectedProductCategory,
                 IsActive = true,
-                DateCreated = DateTime.Now,
-
+                DateCreated = DateTime.UtcNow,
                 ProductImages = dto.UploadedImagesUrls != null
                 ? dto.UploadedImagesUrls.Select(imageUrl => new ProductImage()
                 {
-                    DateCreated = DateTime.Now,
+                    DateCreated = DateTime.UtcNow,
                     ImagePath = imageUrl,
                     IsActive = true
                 }).ToList()

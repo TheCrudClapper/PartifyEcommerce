@@ -23,7 +23,7 @@ namespace CSOS.Core.Mappings.ToDomainEntity.OfferDeliveryTypeMappings
                 DeliveryTypeId = deliveryId,
                 Offer = offer,
                 IsActive = true,
-                DateCreated = DateTime.Now,
+                DateCreated = DateTime.UtcNow,
             };
         }
     }
