@@ -1,3 +1,3 @@
 <p align="center">
-  <img src="https://github.com/TheCrudClapper/PartifyEcommerce/blob/8168f98ddb5ba089278feb68217893844ea21b66/readme_assets/banner.png">
+  <img src="https://github.com/TheCrudClapper/PartifyEcommerce/blob/38f142bc85a79328af6ed0a2f86569b3fb1568eb/readme_assets/ecommerce-banner.png">
 </p>
