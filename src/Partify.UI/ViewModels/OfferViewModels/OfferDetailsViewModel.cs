@@ -18,7 +18,7 @@ namespace CSOS.UI.ViewModels.OfferViewModels
         public decimal Price { get; set; }
         public bool? IsLiked { get; set; }
 
-        public IEnumerable<string> ProductImages = [];
+        public List<string> ProductImages = [];
 
         public IEnumerable<DeliveryTypeViewModel> AvaliableDeliveryTypes = [];
     }

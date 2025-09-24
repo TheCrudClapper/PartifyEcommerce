@@ -1,217 +1,215 @@
 ﻿@model CSOS.UI.ViewModels.OfferViewModels.OfferDetailsViewModel;
 @{
-    ViewBag.Title = "Offer";
+	ViewBag.Title = "Offer";
 }
 @section Styles {
-    <link rel="stylesheet" href="~/css/auction-styles.css" asp-append-version="true" />
+	<link rel="stylesheet" href="~/css/auction-styles.css" asp-append-version="true" />
 }
 
 <div class="container mt-3">
-    <div class="row g-3 mb-2">
-        <span class="fs-6">Partify <b>/</b> @Model.ProductCategory </span>
-    </div>
-    <div class="row g-3">
-        <div class="col-12 col-lg-8">
-            <div class="midesection-style shadow">
-                <span class="mb-2"><span class="fw-bold">Condition: </span>@Model.ProductCondition</span>
-                <span class="mb-2"><span class="fw-bold">Created: </span>@Model.DateCreated.ToString("dd-MM-yyyy")</span>
-                <div class="d-flex justify-content-between">
-                    <h2>@Model.Title</h2>
+	<div class="row g-3 mb-2">
+		<span class="fs-6">Partify <b>/</b> @Model.ProductCategory </span>
+	</div>
+	<div class="row g-3">
+		<div class="col-12 col-lg-8">
+			<div class="midesection-style shadow">
+				<span class="mb-2"><span class="fw-bold">Condition: </span>@Model.ProductCondition</span>
+				<span class="mb-2"><span class="fw-bold">Created: </span>@Model.DateCreated.ToString("dd-MM-yyyy")</span>
+				<div class="d-flex justify-content-between">
+					<h2>@Model.Title</h2>
 
-                    @* Generating favourites button  *@
-                    @if (User.Identity.IsAuthenticated)
-                    {
-                        <form id="likeForm">
-                            @Html.AntiForgeryToken()
-                            <button class="btn like-button" id="likeButton" data-id="@Model.Id">
-                                @if (Model.IsLiked == true)
-                                {
-                                    <i class="fa-solid fa-heart purple-text fs-2"></i>
-                                }
-                                else
-                                {
-                                    <i class="fa-regular fa-heart fs-2"></i>
-                                }
-                            </button>
-                        </form>
-                    }
-                    else
-                    {
-                        <button class="btn like-button disabled" id="likeButton">
-                            <i class="fa-regular fa-heart fs-2"></i>
-                        </button>
-                    }
+					@* Generating favourites button  *@
+					@if (User.Identity.IsAuthenticated)
+					{
+						<form id="likeForm">
+							@Html.AntiForgeryToken()
+							<button class="btn like-button" id="likeButton" data-id="@Model.Id">
+								@if (Model.IsLiked == true)
+								{
+									<i class="fa-solid fa-heart purple-text fs-2"></i>
+								}
+								else
+								{
+									<i class="fa-regular fa-heart fs-2"></i>
+								}
+							</button>
+						</form>
+					}
+					else
+					{
+						<button class="btn like-button disabled" id="likeButton">
+							<i class="fa-regular fa-heart fs-2"></i>
+						</button>
+					}
 
-                </div>
+				</div>
 
-                @* Generating static stars *@
-                @for (int i = 0; i < 5; i++)
-                {
-                    <i class="fa-solid fa-star"></i>
-                }
-                <div class="image-container mt-3 mb-3">
-                    <div id="carouselExample" class="carousel slide">
-                        <div class="carousel-inner">
-                            @* Generating images with given iamge Url *@
-                            @foreach (var image in Model.ProductImages)
-                            {
-                                <div class="carousel-item active">
-                                    <img src="@Url.Content(image)" class="d-block w-100" alt="offer-image">
-                                </div>
-                            }
-                        </div>
+				@* Generating static stars *@
+				@for (int i = 0; i < 5; i++)
+				{
+					<i class="fa-solid fa-star"></i>
+				}
+				<div class="image-container mt-3 mb-3">
+					<div id="carouselExample" class="carousel slide">
 
-                        @if (Model.ProductImages.Count() > 1)
-                        {
-                            <button class="carousel-control-prev" type="button" data-bs-target="#carouselExample" data-bs-slide="prev">
-                                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                                <span class="visually-hidden">Previous</span>
-                            </button>
-                            <button class="carousel-control-next" type="button" data-bs-target="#carouselExample" data-bs-slide="next">
-                                <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                                <span class="visually-hidden">Next</span>
-                            </button>
-                        }
+						<div class="carousel-inner">
 
-                    </div>
-                </div>
-            </div>
+							@for (int i = 0; i < Model.ProductImages.Count; i++)
+							{
+								<div class="carousel-item @(i == 0 ? "active" : "")">
+									<img src="@Url.Content(Model.ProductImages[i])" class="d-block w-100" alt="offer-image">
+								</div>
+							}
+							@if (Model.ProductImages.Count() > 1)
+							{
+								<button class="carousel-control-prev" type="button" data-bs-target="#carouselExample" data-bs-slide="prev">
+									<span class="carousel-control-prev-icon" aria-hidden="true"></span>
+									<span class="visually-hidden">Previous</span>
+								</button>
+								<button class="carousel-control-next" type="button" data-bs-target="#carouselExample" data-bs-slide="next">
+									<span class="carousel-control-next-icon" aria-hidden="true"></span>
+									<span class="visually-hidden">Next</span>
+								</button>
+							}
+						</div>
+					</div>
+				</div>
+				</div>
+			</div>
+			<div class="col-12 col-lg-4">
+				<div class="midesection-style shadow">
+					<p>
+						Sells and sends:
+						<br />
+						<span class="fw-bold">@Model.Seller</span>
+					</p>
+					<hr />
+					<h3 class="fw-bold">@Model.Price PLN</h3>
+					<h6><span class="badge bg-secondary text-bg-secondary">Seller: @(Model.IsSellerCompany ? "Company" : "Private Person") </span></h6>
+					<div class="row">
+						@if (User.Identity.IsAuthenticated)
+						{
+							@if (User.Identity!.Name != Model.Seller)
+							{
+								<form method="post" id="cartForm" asp-action="AddToCart" asp-controller="Cart" asp-route-id="@Model.Id" class="row">
+									@Html.AntiForgeryToken()
+									<div class="col-4">
+										<input type="number"
+											   value="1"
+											   name="quantity"
+											   class="form-control text-center"
+											   min="1"
+											   max="@Model.StockQuantity"
+											   title="Max available: @Model.StockQuantity" />
+									</div>
+									<div class="col-8">
+										<button type="submit" class="btn custom-button w-100 toCartButton" data-id="@Model.Id"> To Cart</button>
+									</div>
+								</form>
+							}
+							else
+							{
+								<div class="col-12">
+									<a class="btn custom-button w-100" href="@Url.Action("Edit", "Offer", new { id = Model.Id })">Edit</a>
+								</div>
+							}
+						}
+					</div>
+					<p class="mt-2">Available: @Model.StockQuantity</p>
+					<hr />
+					<p>
+						<strong>Delivery Types</strong>
+					</p>
+					@foreach (var item in Model.AvaliableDeliveryTypes)
+					{
+						<div>
+							<label class="form-check-label" for="flexRadioDefault1">
+								@item.Title - <span class="text-dark">@item.Price PLN</span>
+							</label>
+						</div>
+					}
+					<hr />
 
-        </div>
-        <div class="col-12 col-lg-4">
-            <div class="midesection-style shadow">
-                <p>
-                    Sells and sends:
-                    <br />
-                    <span class="fw-bold">@Model.Seller</span>
-                </p>
-                <hr />
-                <h3 class="fw-bold">@Model.Price PLN</h3>
-                <h6><span class="badge bg-secondary text-bg-secondary">Seller: @(Model.IsSellerCompany ? "Company" : "Private Person") </span></h6>
-                <div class="row">
-                    @if (User.Identity.IsAuthenticated)
-                    {
-                        @if (User.Identity!.Name != Model.Seller)
-                        {
-                            <form method="post" id="cartForm" asp-action="AddToCart" asp-controller="Cart" asp-route-id="@Model.Id" class="row">
-                                @Html.AntiForgeryToken()
-                                <div class="col-4">
-                                    <input type="number"
-                                           value="1"
-                                           name="quantity"
-                                           class="form-control text-center"
-                                           min="1"
-                                           max="@Model.StockQuantity"
-                                           title="Max available: @Model.StockQuantity" />
-                                </div>
-                                <div class="col-8">
-                                    <button type="submit" class="btn custom-button w-100 toCartButton" data-id="@Model.Id"> To Cart</button>
-                                </div>
-                            </form>
-                        }
-                        else
-                        {
-                            <div class="col-12">
-                                <a class="btn custom-button w-100" href="@Url.Action("Edit", "Offer", new { id = Model.Id })">Edit</a>
-                            </div>
-                        }
-                    }
-                </div>
-                <p class="mt-2">Available: @Model.StockQuantity</p>
-                <hr />
-                <p>
-                    <strong>Delivery Types</strong>
-                </p>
-                @foreach (var item in Model.AvaliableDeliveryTypes)
-                {
-                    <div>
-                        <label class="form-check-label" for="flexRadioDefault1">
-                            @item.Title - <span class="text-dark">@item.Price PLN</span>
-                        </label>
-                    </div>
-                }
-                <hr />
-
-                <p>
-                    <strong>Sender Location</strong>
-                </p>
-                <strong>Place:</strong> @Model.Place <br />
-                <strong>Postal City:</strong> @Model.PostalCity <br />
-                <strong>Postal Code:</strong> @Model.PostalCode
-            </div>
-        </div>
-    </div>
-    <div class="row g-2 mt-2">
-        <div class="col-12 col-lg-8">
-            <div class="midesection-style shadow">
-                <h6 class="mb-2 fw-bold">Product Description</h6>
-                <div class="description-preview">
-                    @Html.Raw(Model.Description.Replace("\n", "<br />"))
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
+					<p>
+						<strong>Sender Location</strong>
+					</p>
+					<strong>Place:</strong> @Model.Place <br />
+					<strong>Postal City:</strong> @Model.PostalCity <br />
+					<strong>Postal Code:</strong> @Model.PostalCode
+				</div>
+			</div>
+		</div>
+		<div class="row g-2 mt-2">
+			<div class="col-12 col-lg-8">
+				<div class="midesection-style shadow">
+					<h6 class="mb-2 fw-bold">Product Description</h6>
+					<div class="description-preview">
+						@Html.Raw(Model.Description.Replace("\n", "<br />"))
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
 @section Scripts {
-    <script>
-        $(document).on('click', '.toCartButton', function(e){
-            e.preventDefault();
+		<script>
+			$(document).on('click', '.toCartButton', function(e){
+				e.preventDefault();
 
-            var $form = $("#cartForm");
-            var offerId = $(this).data('id');
-            var quantity = $form.find('input[name="quantity"]').val();
-            var token = $('input[name="__RequestVerificationToken"]').val();
+				var $form = $("#cartForm");
+				var offerId = $(this).data('id');
+				var quantity = $form.find('input[name="quantity"]').val();
+				var token = $('input[name="__RequestVerificationToken"]').val();
 
-            $.ajax({
-                url: '/Cart/AddToCart/' + offerId,
-                type: 'POST',
-                headers: {
-                     'RequestVerificationToken': token
-                },
-                data: {
-                    quantity: quantity
-                },
-                success: function(response){
-                    showToast(response.message, response.success);
-                    if(response.success){
-                         $('#navbarCart').load(location.href + ' #navbarCart');
-                    }
-                },
-                error: function(xhr){
-                    const response = xhr.responseJSON;
-                    const message = response?.message ?? 'Unexpected error occurred. Try again later.';
-                    showToast(message, false);
-                }
-            });
-        });
+				$.ajax({
+					url: '/Cart/AddToCart/' + offerId,
+					type: 'POST',
+					headers: {
+						 'RequestVerificationToken': token
+					},
+					data: {
+						quantity: quantity
+					},
+					success: function(response){
+						showToast(response.message, response.success);
+						if(response.success){
+							 $('#navbarCart').load(location.href + ' #navbarCart');
+						}
+					},
+					error: function(xhr){
+						const response = xhr.responseJSON;
+						const message = response?.message ?? 'Unexpected error occurred. Try again later.';
+						showToast(message, false);
+					}
+				});
+			});
 
-        $(document).on('click', "#likeButton", function(e){
-            e.preventDefault();
+			$(document).on('click', "#likeButton", function(e){
+				e.preventDefault();
 
-            var btn = $(this);
-            var token = $('input[name="__RequestVerificationToken"]').val();
-            var offerId = btn.data('id');
+				var btn = $(this);
+				var token = $('input[name="__RequestVerificationToken"]').val();
+				var offerId = btn.data('id');
 
-            $.ajax({
-                url: '/Like/LikeOffer/' + offerId,
-                type: 'POST',
-                headers: { 'RequestVerificationToken': token },
-                success: function(response){
-                    let icon = btn.find('i');
+				$.ajax({
+					url: '/Like/LikeOffer/' + offerId,
+					type: 'POST',
+					headers: { 'RequestVerificationToken': token },
+					success: function(response){
+						let icon = btn.find('i');
 
-                    if(response.success){
-                        if(response.data.liked){
-                            icon.removeClass('fa-regular').addClass('fa-solid purple-text');
-                        }
-                        else{
-                            icon.removeClass('fa-solid purple-text').addClass('fa-regular');
-                        }
-                        showToast(response.data.message, true);
-                    } else {
-                        showToast(response.message, false);
-                    }
-                }
-            });
-        });
-    </script>
+						if(response.success){
+							if(response.data.liked){
+								icon.removeClass('fa-regular').addClass('fa-solid purple-text');
+							}
+							else{
+								icon.removeClass('fa-solid purple-text').addClass('fa-regular');
+							}
+							showToast(response.data.message, true);
+						} else {
+							showToast(response.message, false);
+						}
+					}
+				});
+			});
+		</script>
 }
