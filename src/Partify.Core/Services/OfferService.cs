@@ -11,6 +11,11 @@ using CSOS.Core.Mappings.ToDomainEntity.ProductMappings;
 using CSOS.Core.Mappings.ToDto;
 using CSOS.Core.ResultTypes;
 using CSOS.Core.ServiceContracts;
+using Microsoft.Extensions.Caching.Distributed;
+using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Logging;
+using System.Diagnostics;
+using System.Text.Json;
 
 namespace CSOS.Core.Services
 {
@@ -23,6 +28,7 @@ namespace CSOS.Core.Services
         private readonly IOfferDeliveryTypeRepository _offerDeliveryTypeRepo;
         private readonly ICurrentUserService _currentUserService;
         private readonly IUnitOfWork _unitOfWork;
+        private readonly IDistributedCache _cache;
         public OfferService(
             IDeliveryTypeGetterService deliveryTypeGetterService,
             IUnitOfWork unitOfWork,
@@ -32,7 +38,8 @@ namespace CSOS.Core.Services
             ICurrentUserService currentUserService,
             IPictureHandlerService pictureHandlerService,
             IProductImageService productImageService,
-            ISortingOptionService sortingOptionService
+            ISortingOptionService sortingOptionService,
+            IDistributedCache cache
             )
         {
             _productRepo = productRepo;
@@ -42,6 +49,7 @@ namespace CSOS.Core.Services
             _unitOfWork = unitOfWork;
             _pictureHandlerService = pictureHandlerService;
             _productImageService = productImageService;
+            _cache = cache;
         }
         public async Task<Result> Add(OfferAddRequest? addRequest)
         {
@@ -166,13 +174,31 @@ namespace CSOS.Core.Services
 
         public async Task<Result<OfferResponse>> GetOffer(int id)
         {
-            var offer = await _offerRepo.GetOfferWithAllDetailsAsync(id);
+            string key = $"offer:{id}";
+            string? cachedItem = await _cache.GetStringAsync(key);
+            if (cachedItem == null)
+            {
+                var offer = await _offerRepo.GetOfferWithAllDetailsAsync(id);
 
-            if (offer == null || offer.IsOfferPrivate)
-                return Result.Failure<OfferResponse>(OfferErrors.OfferDoesNotExist);
+                if (offer == null || offer.IsOfferPrivate)
+                    return Result.Failure<OfferResponse>(OfferErrors.OfferDoesNotExist);
 
-            var userId = _currentUserService.GetCurrentUserIdOrNull();
-            return offer.ToOfferResponse(userId);
+                var userId = _currentUserService.GetCurrentUserIdOrNull();
+
+                var response = offer.ToOfferResponse(userId);
+
+                string serializedResponse = JsonSerializer.Serialize(response);
+
+                DistributedCacheEntryOptions options = new DistributedCacheEntryOptions()
+                    .SetAbsoluteExpiration(TimeSpan.FromSeconds(100))
+                    .SetSlidingExpiration(TimeSpan.FromSeconds(100));
+
+                await _cache.SetStringAsync(key, serializedResponse, options);
+                return response;
+            }
+
+            var obj = JsonSerializer.Deserialize<OfferResponse>(cachedItem);
+            return obj;
         }
 
         private async Task SaveNewImagesAsync(IOfferImageDto dto, Product product)

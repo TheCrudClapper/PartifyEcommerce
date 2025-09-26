@@ -34,4 +34,6 @@ ENV DB_PORT=5432
 ENV DB_USER=postgres
 ENV DB_NAME=PartfyEcommerceDb 
 ENV DB_PASSWORD=admin
+ENV REDIS_HOST=localhost
+ENV REDIS_PORT=6379
 ENTRYPOINT ["dotnet", "Partify.UI.dll"]

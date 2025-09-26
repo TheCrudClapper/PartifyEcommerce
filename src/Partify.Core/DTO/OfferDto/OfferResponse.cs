@@ -19,8 +19,8 @@ namespace CSOS.Core.DTO.OfferDto
         public string Place { get; set; } = null!;
         public decimal Price { get; set; }
 
-        public IEnumerable<string> ProductImages = [];
+        public IEnumerable<string> ProductImages { get; set; } = Enumerable.Empty<string>();
 
-        public IEnumerable<DeliveryTypeResponse> AvaliableDeliveryTypes = [];
+        public IEnumerable<DeliveryTypeResponse> AvaliableDeliveryTypes { get; set; } = Enumerable.Empty<DeliveryTypeResponse>();
     }
 }

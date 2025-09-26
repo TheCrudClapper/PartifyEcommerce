@@ -48,7 +48,9 @@ builder.Services.AddScoped<OfferViewModelInitializer>();
 // -----------------------------
 builder.Services.AddStackExchangeRedisCache(options =>
 {
-    options.Configuration = $"{Environment.GetEnvironmentVariable("REDIS_HOST") ?? "localhost"}:{Environment.GetEnvironmentVariable("REDIS_PORT")}" ?? "6379";
+    var host = Environment.GetEnvironmentVariable("REDIS_HOST") ?? "localhost";
+    var port = Environment.GetEnvironmentVariable("REDIS_PORT") ?? "6379";
+    options.Configuration = $"{host}:{port}";
 });
 
 // -----------------------------

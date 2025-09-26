@@ -11,7 +11,9 @@
         "DB_PORT": "5432",
         "DB_USER": "postgres",
         "DB_PASSWORD": "admin",
-        "DB_NAME": "PartifyEcommerceDb"
+        "DB_NAME": "PartifyEcommerceDb",
+        "REDIS_PORT": "6379",
+        "REDIS_HOST": "localhost"
       },
       "dotnetRunMessages": true,
       "applicationUrl": "http://localhost:5200"
@@ -27,7 +29,9 @@
         "DB_PORT": "5432",
         "DB_USER": "postgres",
         "DB_PASSWORD": "admin",
-        "DB_NAME": "PartifyEcommerceDb"
+        "DB_NAME": "PartifyEcommerceDb",
+        "REDIS_PORT": "6379",
+        "REDIS_HOST": "localhost"
       },
       "dotnetRunMessages": true,
       "applicationUrl": "https://localhost:5020;http://localhost:5200"
@@ -43,7 +47,9 @@
         "DB_PORT": "5432",
         "DB_USER": "postgres",
         "DB_PASSWORD": "admin",
-        "DB_NAME": "PartifyEcommerceDb"
+        "DB_NAME": "PartifyEcommerceDb",
+        "REDIS_PORT": "6379",
+        "REDIS_HOST": "localhost"
       },
       "applicationUrl": "https://localhost:44328/"
     },
@@ -52,14 +58,16 @@
       "launchBrowser": true,
       "launchUrl": "{Scheme}://{ServiceHost}:{ServicePort}",
       "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development",
         "ASPNETCORE_HTTPS_PORTS": "8081",
         "ASPNETCORE_HTTP_PORTS": "8080",
-        "ASPNETCORE_ENVIRONMENT": "Development",
         "DB_HOST": "localhost",
         "DB_PORT": "5432",
         "DB_USER": "postgres",
         "DB_PASSWORD": "admin",
-        "DB_NAME": "PartifyEcommerceDb"
+        "DB_NAME": "PartifyEcommerceDb",
+        "REDIS_PORT": "6379",
+        "REDIS_HOST": "localhost"
       },
       "publishAllPorts": true,
       "useSSL": true
