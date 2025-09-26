@@ -1,6 +1,6 @@
 services:
 
-  #Main Application Container
+  # Main Application Container
   partify-ecommerce:
     build:
       context: .
@@ -18,6 +18,8 @@ services:
         - ASPNETCORE_Kestrel__Endpoints__Http__Url=http://+:8080
         - DB_HOST=postgres-db
         - DB_PORT=5432
+        - REDIS_PORT=6379
+        - REDIS_HOST=redis
         - DB_USER=postgres
         - DB_NAME=PartifyEcommerceDb
         - DB_PASSWORD=admin
@@ -26,7 +28,7 @@ services:
     networks:
         - internal-network
 
-  #Postgres Database Container
+  # Postgres Database Container
   postgres-db:
     image: postgres:latest
     environment:
@@ -37,6 +39,16 @@ services:
         - ./postgres-init:/docker-entrypoint-initdb.d
     ports:
         - "5998:5432"
+    networks:
+        - internal-network
+
+    # Redis Cache
+  redis: 
+    image: redis:latest
+    volumes:
+        - ./src/redis-cache:/data 
+    ports:
+        - "6379:6379"
     networks:
         - internal-network
 

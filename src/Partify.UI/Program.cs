@@ -44,6 +44,14 @@ builder.Services.AddScoped<ValidatePicturesFilter>();
 builder.Services.AddScoped<OfferViewModelInitializer>();
 
 // -----------------------------
+// Redis Caching
+// -----------------------------
+builder.Services.AddStackExchangeRedisCache(options =>
+{
+    options.Configuration = $"{Environment.GetEnvironmentVariable("REDIS_HOST") ?? "localhost"}:{Environment.GetEnvironmentVariable("REDIS_PORT")}" ?? "6379";
+});
+
+// -----------------------------
 // Unit of Work
 // -----------------------------
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
