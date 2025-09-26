@@ -1,6 +1,8 @@
-﻿using CSOS.Core.ServiceContracts;
+﻿using CSOS.Core.Helpers;
+using CSOS.Core.ServiceContracts;
 using CSOS.Core.Services;
 using Microsoft.Extensions.DependencyInjection;
+using Partify.Core.Helpers;
 
 namespace CSOS.Core
 {
@@ -24,6 +26,12 @@ namespace CSOS.Core
             services.AddScoped<IAddressService, AddressService>();
             services.AddScoped<IProductImageService, ProductImageService>();
             services.AddScoped<ISortingOptionService, SortingOptionsService>();
+
+            // -----------------------------
+            // Custom Caching Helper
+            // -----------------------------
+            services.AddScoped<ICachingHelper, CachingHelper>();
+
             return services;
         }
     }

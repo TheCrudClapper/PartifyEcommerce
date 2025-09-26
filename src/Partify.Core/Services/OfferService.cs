@@ -11,11 +11,7 @@ using CSOS.Core.Mappings.ToDomainEntity.ProductMappings;
 using CSOS.Core.Mappings.ToDto;
 using CSOS.Core.ResultTypes;
 using CSOS.Core.ServiceContracts;
-using Microsoft.Extensions.Caching.Distributed;
-using Microsoft.Extensions.Caching.Memory;
-using Microsoft.Extensions.Logging;
-using System.Diagnostics;
-using System.Text.Json;
+using Partify.Core.Helpers;
 
 namespace CSOS.Core.Services
 {
@@ -28,7 +24,7 @@ namespace CSOS.Core.Services
         private readonly IOfferDeliveryTypeRepository _offerDeliveryTypeRepo;
         private readonly ICurrentUserService _currentUserService;
         private readonly IUnitOfWork _unitOfWork;
-        private readonly IDistributedCache _cache;
+        private readonly ICachingHelper _cachingHelper;
         public OfferService(
             IDeliveryTypeGetterService deliveryTypeGetterService,
             IUnitOfWork unitOfWork,
@@ -39,7 +35,7 @@ namespace CSOS.Core.Services
             IPictureHandlerService pictureHandlerService,
             IProductImageService productImageService,
             ISortingOptionService sortingOptionService,
-            IDistributedCache cache
+            ICachingHelper cachingHelper
             )
         {
             _productRepo = productRepo;
@@ -49,7 +45,7 @@ namespace CSOS.Core.Services
             _unitOfWork = unitOfWork;
             _pictureHandlerService = pictureHandlerService;
             _productImageService = productImageService;
-            _cache = cache;
+            _cachingHelper = cachingHelper;
         }
         public async Task<Result> Add(OfferAddRequest? addRequest)
         {
@@ -107,6 +103,9 @@ namespace CSOS.Core.Services
             await AddDeliveryTypesAsync(updateRequest, offer);
 
             await _unitOfWork.SaveChangesAsync();
+
+            string cacheKey = CachingHelper.GenerateCacheKey("offer", updateRequest.Id);
+            await _cachingHelper.InvalidateCache(cacheKey);
             return Result.Success();
         }
 
@@ -122,6 +121,9 @@ namespace CSOS.Core.Services
             offer.IsActive = false;
 
             await _unitOfWork.SaveChangesAsync();
+
+            string cacheKey = CachingHelper.GenerateCacheKey("offer", id);
+            await _cachingHelper.InvalidateCache(cacheKey);
             return Result.Success();
         }
 
@@ -163,7 +165,7 @@ namespace CSOS.Core.Services
         {
             var count = await _offerRepo.GetNonPrivateOfferCount();
             if (count == 0)
-                return [];
+                return Enumerable.Empty<CardResponse>();
 
             var take = Math.Min(count, 7);
 
@@ -174,31 +176,22 @@ namespace CSOS.Core.Services
 
         public async Task<Result<OfferResponse>> GetOffer(int id)
         {
-            string key = $"offer:{id}";
-            string? cachedItem = await _cache.GetStringAsync(key);
-            if (cachedItem == null)
-            {
-                var offer = await _offerRepo.GetOfferWithAllDetailsAsync(id);
+            string cacheKey = CachingHelper.GenerateCacheKey("offer", id);
+            var objFromCache = await _cachingHelper.GetCachedObject<OfferResponse>(cacheKey);
+            if (objFromCache.Found)
+                return objFromCache.Value;
 
-                if (offer == null || offer.IsOfferPrivate)
-                    return Result.Failure<OfferResponse>(OfferErrors.OfferDoesNotExist);
+            var offer = await _offerRepo.GetOfferWithAllDetailsAsync(id);
 
-                var userId = _currentUserService.GetCurrentUserIdOrNull();
+            if (offer == null || offer.IsOfferPrivate)
+                return Result.Failure<OfferResponse>(OfferErrors.OfferDoesNotExist);
 
-                var response = offer.ToOfferResponse(userId);
+            var userId = _currentUserService.GetCurrentUserIdOrNull();
 
-                string serializedResponse = JsonSerializer.Serialize(response);
+            var response = offer.ToOfferResponse(userId);
+            await _cachingHelper.CacheObject(response, cacheKey, CachingHelper.StandardCacheOptions());
 
-                DistributedCacheEntryOptions options = new DistributedCacheEntryOptions()
-                    .SetAbsoluteExpiration(TimeSpan.FromSeconds(100))
-                    .SetSlidingExpiration(TimeSpan.FromSeconds(100));
-
-                await _cache.SetStringAsync(key, serializedResponse, options);
-                return response;
-            }
-
-            var obj = JsonSerializer.Deserialize<OfferResponse>(cachedItem);
-            return obj;
+            return response;
         }
 
         private async Task SaveNewImagesAsync(IOfferImageDto dto, Product product)
