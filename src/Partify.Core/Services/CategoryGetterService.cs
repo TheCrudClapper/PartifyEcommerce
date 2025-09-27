@@ -1,35 +1,48 @@
-﻿using CSOS.Core.Domain.RepositoryContracts;
-using CSOS.Core.DTO;
+﻿using CSOS.Core.Caching;
+using CSOS.Core.Domain.RepositoryContracts;
 using CSOS.Core.DTO.UniversalDto;
 using CSOS.Core.Mappings.ToDto;
 using CSOS.Core.ServiceContracts;
+namespace CSOS.Core.Services;
 
-namespace CSOS.Core.Services
+public class CategoryGetterService : ICategoryGetterService
 {
-    public class CategoryGetterService : ICategoryGetterService
+    private readonly IProductCategoryRepository _productCategoryRepo;
+    private readonly ICachingHelper _cachingHelper;
+
+    //Cache key constants
+    private const string CacheKeyCardResponse = "categories-as-card-response:all";
+    private const string CacheKeySelectList = "categories-as-select-list:all";
+    public CategoryGetterService(IProductCategoryRepository productCategoryRepository, ICachingHelper cachingHelper)
     {
-        private readonly IProductCategoryRepository _productCategoryRepo;
-        public CategoryGetterService(IProductCategoryRepository productCategoryRepository)
-        {
-            _productCategoryRepo = productCategoryRepository;
-        }
+        _productCategoryRepo = productCategoryRepository;
+        _cachingHelper = cachingHelper;
+    }
 
-        public async Task<IEnumerable<CardResponse>> GetProductCategoriesAsCardResponse()
-        {
-            var categories = await _productCategoryRepo.GetAllProductCategoriesAsync();
+    public async Task<IEnumerable<CardResponse>> GetProductCategoriesAsCardResponse()
+    {
+        var objFromCache = await _cachingHelper.GetCachedObject<IEnumerable<CardResponse>>(CacheKeyCardResponse);
+        if (objFromCache.Found)
+            return objFromCache.Value!;
 
-            return categories.Select(item => new CardResponse()
-            {
-                Id = item.Id,
-                ImageUrl = item.CategoryImage,
-                Title = item.Name,
-            });
-        }
-        public async Task<IEnumerable<SelectListItemDto>> GetProductCategoriesAsSelectList()
-        {
-            var categories = await _productCategoryRepo.GetAllProductCategoriesAsync();
+        var categories = await _productCategoryRepo.GetAllProductCategoriesAsync();
 
-            return categories.Select(item => item.ToSelectListItem());
-        }
+        var dto = categories.Select(item => item.ToCardResponse()).ToList();
+
+        await _cachingHelper.CacheObject(dto, CacheKeyCardResponse, CachingProfiles.ShortTTLCacheOption);
+        return dto;
+    }
+    public async Task<IEnumerable<SelectListItemDto>> GetProductCategoriesAsSelectList()
+    {
+        var objFromCache = await _cachingHelper.GetCachedObject<IEnumerable<SelectListItemDto>>(CacheKeySelectList);
+        if (objFromCache.Found)
+            return objFromCache.Value!;
+
+        var categories = await _productCategoryRepo.GetAllProductCategoriesAsync();
+
+        var dto = categories.Select(item => item.ToSelectListItem()).ToList();
+
+        await _cachingHelper.CacheObject(dto, CacheKeySelectList, CachingProfiles.MediumTTLCacheOption);
+        return dto;
     }
 }

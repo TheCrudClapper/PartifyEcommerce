@@ -5,41 +5,40 @@ using CSOS.Core.Mappings.ToDto;
 using CSOS.Core.ResultTypes;
 using CSOS.Core.ServiceContracts;
 
-namespace CSOS.Core.Services
+namespace CSOS.Core.Services;
+
+public class ProductImageService : IProductImageService
 {
-    public class ProductImageService : IProductImageService
+    private readonly IProductImageRepository _productImageRepo;
+    public ProductImageService(IProductImageRepository productImageRepository)
     {
-        private readonly IProductImageRepository _productImageRepo;
-        public ProductImageService(IProductImageRepository productImageRepository)
-        {
-            _productImageRepo = productImageRepository;
-        }
+        _productImageRepo = productImageRepository;
+    }
 
-        public async Task<IEnumerable<SelectListItemDto>> GetOfferPicturesAsync(int offerId)
-        {
-            var items = await _productImageRepo.GetImagesFromOfferAsync(offerId);
+    public async Task<IEnumerable<SelectListItemDto>> GetOfferPicturesAsync(int offerId)
+    {
+        var items = await _productImageRepo.GetImagesFromOfferAsync(offerId);
 
-            return items.Select(item => item.ToSelectListItem()).ToList();
-        }
-        
-        public Result DeleteImagesFromOffer(IEnumerable<ProductImage> images, IEnumerable<int>? imageIds)
-        {
-            if (!images.Any())
-                return Result.Failure(ProductImageErrors.ProductImagesAreEmpty);
+        return items.Select(item => item.ToSelectListItem()).ToList();
+    }
+    
+    public Result DeleteImagesFromOffer(IEnumerable<ProductImage> images, IEnumerable<int>? imageIds)
+    {
+        if (!images.Any())
+            return Result.Failure(ProductImageErrors.ProductImagesAreEmpty);
 
-            if(imageIds != null)
+        if(imageIds != null)
+        {
+            foreach (var imageToDelete in images)
             {
-                foreach (var imageToDelete in images)
+                if (imageIds.Contains(imageToDelete.Id))
                 {
-                    if (imageIds.Contains(imageToDelete.Id))
-                    {
-                        imageToDelete.DateDeleted = DateTime.UtcNow;
-                        imageToDelete.IsActive = false;
-                    }
+                    imageToDelete.DateDeleted = DateTime.UtcNow;
+                    imageToDelete.IsActive = false;
                 }
             }
-
-            return Result.Success();
         }
+
+        return Result.Success();
     }
 }

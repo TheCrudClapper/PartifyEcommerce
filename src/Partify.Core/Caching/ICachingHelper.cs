@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.Caching.Distributed;
 
-namespace CSOS.Core.Helpers;
+namespace CSOS.Core.Caching;
 
 public interface ICachingHelper
 {

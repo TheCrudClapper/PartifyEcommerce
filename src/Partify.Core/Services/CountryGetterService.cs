@@ -4,22 +4,21 @@ using CSOS.Core.DTO.UniversalDto;
 using CSOS.Core.Mappings.ToDto;
 using CSOS.Core.ServiceContracts;
 
-namespace CSOS.Core.Services
+namespace CSOS.Core.Services;
+
+public class CountryGetterService : ICountriesGetterService
 {
-    public class CountryGetterService : ICountriesGetterService
+    private readonly ICountryRepository _countryRepository;
+
+    public CountryGetterService(ICountryRepository countryRepository)
     {
-        private readonly ICountryRepository _countryRepository;
+        _countryRepository = countryRepository;
+    }
 
-        public CountryGetterService(ICountryRepository countryRepository)
-        {
-            _countryRepository = countryRepository;
-        }
+    public async Task<IEnumerable<SelectListItemDto>> GetCountriesSelectionList()
+    {
+        var countries = await _countryRepository.GetAllCountriesAsync();
 
-        public async Task<IEnumerable<SelectListItemDto>> GetCountriesSelectionList()
-        {
-            var countries = await _countryRepository.GetAllCountriesAsync();
-
-            return countries.Select(item => item.ToSelectListItem());
-        }
+        return countries.Select(item => item.ToSelectListItem());
     }
 }

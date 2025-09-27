@@ -1,14 +1,14 @@
-﻿using CSOS.Core.Helpers;
-using Microsoft.Extensions.Caching.Distributed;
+﻿using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Logging;
 using System.Text.Json;
 
-namespace Partify.Core.Helpers;
+namespace CSOS.Core.Caching;
 
 public class CachingHelper : ICachingHelper
 {
     private readonly IDistributedCache _distributedCache;
     private readonly ILogger<CachingHelper> _logger;
+    
     public CachingHelper(IDistributedCache distributedCache, ILogger<CachingHelper> logger)
     {
         _distributedCache = distributedCache;
@@ -16,21 +16,20 @@ public class CachingHelper : ICachingHelper
     }
     public async Task<(bool Found, T? Value)> GetCachedObject<T>(string cacheKey)
     {
-        var stringObj = await _distributedCache.GetStringAsync(cacheKey);
-
-        if (stringObj is null)
+        byte[]? objInBytes = await _distributedCache.GetAsync(cacheKey);
+        if (objInBytes is null)
             return (false, default);
 
         try
         {
 
-            T? cachedObj = JsonSerializer.Deserialize<T>(stringObj);
+            T? cachedObj = JsonSerializer.Deserialize<T>(objInBytes);
             return (true, cachedObj);
         }
-        catch (JsonException)
+        catch (JsonException ex)
         {
             await _distributedCache.RemoveAsync(cacheKey);
-            _logger.LogWarning($"Found corrupted cache of key: {cacheKey} - removing");
+            _logger.LogWarning(ex, $"Found corrupted cache of key: {cacheKey} - removing");
             return (false, default);
         }
 
@@ -38,16 +37,16 @@ public class CachingHelper : ICachingHelper
 
     public async Task CacheObject<T>(T obj, string cacheKey, DistributedCacheEntryOptions options)
     {
-        string objSerialized;
+        byte[] objSerialized;
         try
         {
-            objSerialized = JsonSerializer.Serialize<T>(obj);
-            await _distributedCache.SetStringAsync(cacheKey, objSerialized, options);
+            objSerialized = JsonSerializer.SerializeToUtf8Bytes(obj);
+            await _distributedCache.SetAsync(cacheKey, objSerialized, options);
             _logger.LogInformation($"Successfully saved key: {cacheKey} object to cache");
         }
-        catch
+        catch(Exception ex)
         {
-            _logger.LogWarning($"Caching for object of key: {cacheKey} failed");
+            _logger.LogWarning(ex, $"Caching for object of key: {cacheKey} failed.");
         }
     }
 
@@ -66,11 +65,5 @@ public class CachingHelper : ICachingHelper
         string id = string.Join("-", sortedIds);
         return $"{prefix}:{id}";
     }
-
-    public static DistributedCacheEntryOptions StandardCacheOptions()
-      => new DistributedCacheEntryOptions()
-          .SetAbsoluteExpiration(TimeSpan.FromSeconds(40))
-          .SetSlidingExpiration(TimeSpan.FromSeconds(20));
-
 }
 

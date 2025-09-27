@@ -118,5 +118,15 @@ namespace CSOS.Core.Mappings.ToDto
                   .FirstOrDefault(),
             };
         }
+
+        public static CardResponse ToCardResponse(this ProductCategory productCategory)
+        {
+            return new CardResponse()
+            {
+                Id = productCategory.Id,
+                ImageUrl = productCategory.CategoryImage,
+                Title = productCategory.Name,
+            };
+        }
     }
 }

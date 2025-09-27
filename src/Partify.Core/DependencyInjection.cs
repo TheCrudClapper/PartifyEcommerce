@@ -1,8 +1,7 @@
-﻿using CSOS.Core.Helpers;
+﻿using CSOS.Core.Caching;
 using CSOS.Core.ServiceContracts;
 using CSOS.Core.Services;
 using Microsoft.Extensions.DependencyInjection;
-using Partify.Core.Helpers;
 
 namespace CSOS.Core
 {
