@@ -27,10 +27,10 @@ public class CategoryGetterService : ICategoryGetterService
 
         var categories = await _productCategoryRepo.GetAllProductCategoriesAsync();
 
-        var dto = categories.Select(item => item.ToCardResponse()).ToList();
+        var dtos = categories.Select(item => item.ToCardResponse()).ToList();
 
-        await _cachingHelper.CacheObject(dto, CacheKeyCardResponse, CachingProfiles.ShortTTLCacheOption);
-        return dto;
+        await _cachingHelper.CacheObject(dtos, CacheKeyCardResponse, CachingProfiles.ShortTTLCacheOption);
+        return dtos;
     }
     public async Task<IEnumerable<SelectListItemDto>> GetProductCategoriesAsSelectList()
     {
@@ -40,9 +40,9 @@ public class CategoryGetterService : ICategoryGetterService
 
         var categories = await _productCategoryRepo.GetAllProductCategoriesAsync();
 
-        var dto = categories.Select(item => item.ToSelectListItem()).ToList();
+        var dtos = categories.Select(item => item.ToSelectListItem()).ToList();
 
-        await _cachingHelper.CacheObject(dto, CacheKeySelectList, CachingProfiles.MediumTTLCacheOption);
-        return dto;
+        await _cachingHelper.CacheObject(dtos, CacheKeySelectList, CachingProfiles.MediumTTLCacheOption);
+        return dtos;
     }
 }
