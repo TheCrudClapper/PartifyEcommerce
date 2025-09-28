@@ -7,17 +7,6 @@ namespace CSOS.Core.Mappings.ToDto
 {
     public static class OfferMappings
     {
-        public static CardResponse ToCardResponse(this Offer offer)
-        {
-            var firstActiveImage = offer.Product.ProductImages.FirstOrDefault(item => item.IsActive);
-            return new CardResponse()
-            {
-                Id = offer.Id,
-                ImageUrl = firstActiveImage?.ImagePath,
-                Price = offer.Price,
-                Title = offer.Product.ProductName,
-            };
-        }
         
         public static OfferResponse ToOfferResponse(this Offer offer, Guid? currentUserId)
         {
@@ -116,16 +105,6 @@ namespace CSOS.Core.Mappings.ToDto
                   .Where(item => item.DeliveryType.Title.Contains("Locker"))
                   .Select(item => item.DeliveryTypeId)
                   .FirstOrDefault(),
-            };
-        }
-
-        public static CardResponse ToCardResponse(this ProductCategory productCategory)
-        {
-            return new CardResponse()
-            {
-                Id = productCategory.Id,
-                ImageUrl = productCategory.CategoryImage,
-                Title = productCategory.Name,
             };
         }
     }
