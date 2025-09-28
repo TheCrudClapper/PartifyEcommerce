@@ -9,7 +9,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Moq;
 using AutoFixture;
-using CSOS.Core.DTO.AccountDto;
+using CSOS.Core.DTO.Account;
 using CSOS.Core.ResultTypes;
 using CSOS.Core.Services;
 

@@ -1,6 +1,6 @@
 using Moq;
 using AutoFixture;
-using CSOS.Core.DTO.AccountDto;
+using CSOS.Core.DTO.Account;
 using CSOS.Core.DTO.UniversalDto;
 using FluentAssertions;
 using Microsoft.AspNetCore.Identity;

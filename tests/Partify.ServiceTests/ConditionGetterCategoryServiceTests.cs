@@ -1,5 +1,6 @@
 ﻿using AutoFixture;
 using ComputerServiceOnlineShop.Entities.Models;
+using CSOS.Core.Caching;
 using CSOS.Core.Domain.Entities;
 using CSOS.Core.Domain.RepositoryContracts;
 using CSOS.Core.DTO;
@@ -16,13 +17,17 @@ namespace CSOS.Tests
         private readonly IConditionGetterService _conditionGetterService;
         private readonly IConditionRepository _conditionRepo;
         private readonly Mock<IConditionRepository> _conditionRepoMock;
+        private readonly ICachingHelper _cachingHelper;
+        private readonly Mock<ICachingHelper> _cachingHelperMock;
         private readonly Fixture _fixture;
         public ConditionGetterCategoryServiceTests()
         {
             _fixture = new Fixture();
             _conditionRepoMock = new Mock<IConditionRepository>();
             _conditionRepo = _conditionRepoMock.Object;
-            _conditionGetterService = new ConditionGetterService(_conditionRepo);
+            _cachingHelperMock = new Mock<ICachingHelper>();
+            _cachingHelper = _cachingHelperMock.Object;
+            _conditionGetterService = new ConditionGetterService(_conditionRepo, _cachingHelper);
 
             _fixture.Behaviors
             .OfType<ThrowingRecursionBehavior>()

@@ -1,8 +1,7 @@
 ﻿using AutoFixture;
-using ComputerServiceOnlineShop.Entities.Models;
+using CSOS.Core.Caching;
 using CSOS.Core.Domain.Entities;
 using CSOS.Core.Domain.RepositoryContracts;
-using CSOS.Core.DTO;
 using CSOS.Core.DTO.DeliveryTypeDto;
 using CSOS.Core.DTO.UniversalDto;
 using CSOS.Core.ServiceContracts;
@@ -15,13 +14,17 @@ namespace CSOS.Tests
     {
         private readonly IDeliveryTypeRepository  _deliveryTypeRepo;
         private readonly Mock<IDeliveryTypeRepository> _deliveryTypeRepoMock;
+        private readonly ICachingHelper _cachingHelper;
+        private readonly Mock<ICachingHelper> _cachingHelperMock;
         private readonly IDeliveryTypeGetterService _deliveryTypeGetterService;
         private readonly Fixture _fixture;
         public DeliveryTypeGetterServiceTests()
         {
             _deliveryTypeRepoMock = new Mock<IDeliveryTypeRepository>();
             _deliveryTypeRepo = _deliveryTypeRepoMock.Object;
-            _deliveryTypeGetterService = new DeliveryTypeGetterService(_deliveryTypeRepo);
+            _cachingHelperMock = new Mock<ICachingHelper>();
+            _cachingHelper = _cachingHelperMock.Object;
+            _deliveryTypeGetterService = new DeliveryTypeGetterService(_deliveryTypeRepo, _cachingHelper);
             _fixture = new Fixture();
         }
         #region  GetAllDeliveryTypesAsSelectionList Method Tests
@@ -32,7 +35,7 @@ namespace CSOS.Tests
             _deliveryTypeRepoMock.Setup(item => item.GetAllDeliveryTypesAsync()).ReturnsAsync(new List<DeliveryType>() { });
 
             //Act
-            var deliveryTypes = await _deliveryTypeGetterService.GetAllDeliveryTypesAsSelectionList();
+            var deliveryTypes = await _deliveryTypeGetterService.GetAllDeliveryTypesAsSelectList();
 
             //Assert
             deliveryTypes.Should().BeEmpty();
@@ -51,7 +54,7 @@ namespace CSOS.Tests
             _deliveryTypeRepoMock.Setup(item => item.GetAllDeliveryTypesAsync()).ReturnsAsync(deliveries);
 
             //Act
-            var deliveriesFromService = await _deliveryTypeGetterService.GetAllDeliveryTypesAsSelectionList();
+            var deliveriesFromService = await _deliveryTypeGetterService.GetAllDeliveryTypesAsSelectList();
 
             //Assert
             deliveriesFromService.Should().NotBeEmpty();

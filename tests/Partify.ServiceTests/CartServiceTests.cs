@@ -579,7 +579,7 @@ namespace CSOS.Tests
 
         #region GetCartItemsQuantity Method Tests
         [Fact]
-        public async void GetCartItemsQuantity_InvalidUserId_ReturnsZero()
+        public async Task GetCartItemsQuantity_InvalidUserId_ReturnsZero()
         {
             //Arrange
             _cartRepositoryMock.Setup(item => item.GetLoggedUserCartIdAsync(It.IsAny<Guid>()))

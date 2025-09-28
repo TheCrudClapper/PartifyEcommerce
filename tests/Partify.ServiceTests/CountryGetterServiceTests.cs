@@ -1,6 +1,7 @@
 ﻿using AutoFixture;
 using ComputerServiceOnlineShop.Entities.Models;
 using ComputerServiceOnlineShop.Services;
+using CSOS.Core.Caching;
 using CSOS.Core.Domain.Entities;
 using CSOS.Core.Domain.RepositoryContracts;
 using CSOS.Core.DTO;
@@ -16,6 +17,8 @@ namespace CSOS.Tests
     {
         private readonly ICountriesGetterService _countryGetterService;
         private readonly ICountryRepository _countryRepo;
+        private readonly ICachingHelper _cachingHelper;
+        private readonly Mock<ICachingHelper> _cachingHelperMock;
         private readonly Mock<ICountryRepository> _countryRepoMock;
         private readonly Fixture _fixture;
         
@@ -23,7 +26,9 @@ namespace CSOS.Tests
         {
             _countryRepoMock = new Mock<ICountryRepository>();
             _countryRepo = _countryRepoMock.Object;
-            _countryGetterService = new CountryGetterService(_countryRepo);
+            _cachingHelperMock = new Mock<ICachingHelper>();
+            _cachingHelper = _cachingHelperMock.Object;
+            _countryGetterService = new CountryGetterService(_countryRepo, _cachingHelper);
             _fixture = new Fixture();
         }
 

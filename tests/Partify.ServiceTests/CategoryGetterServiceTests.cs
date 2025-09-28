@@ -10,6 +10,7 @@ using CSOS.Core.DTO.OfferDto;
 using CSOS.Core.DTO.UniversalDto;
 using FluentAssertions;
 using Xunit.Abstractions;
+using CSOS.Core.Caching;
 
 namespace CSOS.Tests
 {
@@ -18,6 +19,8 @@ namespace CSOS.Tests
         private readonly IProductCategoryRepository _productCategoryRepo;
         private readonly Mock<IProductCategoryRepository> _productCategoryMoq;
         private readonly ICategoryGetterService _categoryGetterService;
+        private readonly ICachingHelper _cachingHelper;
+        private readonly Mock<ICachingHelper> _cachingHelperMock;
         private readonly ITestOutputHelper _testOutputHelper;
         private readonly Fixture _fixture;
         public CategoryGetterServiceTests(ITestOutputHelper testOutputHelper)
@@ -26,9 +29,9 @@ namespace CSOS.Tests
             _fixture = new Fixture();
             _productCategoryMoq = new Mock<IProductCategoryRepository>();
             _productCategoryRepo = _productCategoryMoq.Object;
-            _categoryGetterService = new CategoryGetterService(_productCategoryRepo);
-
-
+            _cachingHelperMock = new Mock<ICachingHelper>();
+            _cachingHelper = _cachingHelperMock.Object;
+            _categoryGetterService = new CategoryGetterService(_productCategoryRepo, _cachingHelper);
             _fixture.Behaviors
             .OfType<ThrowingRecursionBehavior>()
             .ToList()
