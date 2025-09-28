@@ -1,12 +1,9 @@
 ﻿using ComputerServiceOnlineShop.Entities.Models.IdentityEntities;
-using CSOS.Core.Domain.RepositoryContracts;
 using CSOS.Core.ServiceContracts;
 using Microsoft.AspNetCore.Http;
 using System.Security.Claims;
 using CSOS.Core.ResultTypes;
 using Microsoft.AspNetCore.Identity;
-using System.Runtime.InteropServices;
-
 namespace CSOS.Core.Services;
 
 public class CurrentUserService : ICurrentUserService
