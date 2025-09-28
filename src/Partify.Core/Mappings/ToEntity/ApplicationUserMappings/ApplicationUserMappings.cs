@@ -1,6 +1,6 @@
 ﻿using ComputerServiceOnlineShop.Entities.Models.IdentityEntities;
 using CSOS.Core.Domain.Entities;
-using CSOS.Core.DTO.AccountDto;
+using CSOS.Core.DTO.Account;
 
 namespace CSOS.Core.Mappings.ToDomainEntity.ApplicationUserMappings
 {

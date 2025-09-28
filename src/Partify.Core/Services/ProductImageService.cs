@@ -1,5 +1,7 @@
-﻿using CSOS.Core.Domain.Entities;
+﻿using CSOS.Core.Caching;
+using CSOS.Core.Domain.Entities;
 using CSOS.Core.Domain.RepositoryContracts;
+using CSOS.Core.DTO.ProductImage;
 using CSOS.Core.DTO.UniversalDto;
 using CSOS.Core.Mappings.ToDto;
 using CSOS.Core.ResultTypes;
@@ -10,9 +12,12 @@ namespace CSOS.Core.Services;
 public class ProductImageService : IProductImageService
 {
     private readonly IProductImageRepository _productImageRepo;
-    public ProductImageService(IProductImageRepository productImageRepository)
+    private readonly ICachingHelper _cachingHelper;
+
+    public ProductImageService(IProductImageRepository productImageRepository, ICachingHelper cachingHelper)
     {
         _productImageRepo = productImageRepository;
+        _cachingHelper = cachingHelper;
     }
 
     public async Task<IEnumerable<SelectListItemDto>> GetOfferPicturesAsync(int offerId)

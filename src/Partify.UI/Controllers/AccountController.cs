@@ -1,5 +1,5 @@
 ﻿using ComputerServiceOnlineShop.Entities.Models.IdentityEntities;
-using CSOS.Core.DTO.AccountDto;
+using CSOS.Core.DTO.Account;
 using CSOS.Core.ServiceContracts;
 using CSOS.UI.Helpers;
 using CSOS.UI.Mappings.ToDto;

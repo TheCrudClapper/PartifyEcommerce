@@ -1,4 +1,4 @@
-﻿using CSOS.Core.DTO.AccountDto;
+﻿using CSOS.Core.DTO.Account;
 using CSOS.UI.ViewModels.AddressViewModels;
 
 namespace CSOS.UI.ViewModels.AccountViewModels

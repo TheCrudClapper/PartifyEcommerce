@@ -1,6 +1,5 @@
 ﻿using CSOS.Core.Domain.Entities;
-using CSOS.Core.DTO.AccountDto;
-using CSOS.Core.DTO.AddressDto;
+using CSOS.Core.DTO.Address;
 
 namespace CSOS.Core.Mappings.ToDomainEntity.AddressMappings
 {

@@ -10,6 +10,7 @@ using CSOS.Core.DTO.UniversalDto;
 using CSOS.Core.ResultTypes;
 using CSOS.Core.Services;
 using FluentAssertions;
+using CSOS.Core.Caching;
 
 namespace CSOS.Tests
 {
@@ -17,6 +18,8 @@ namespace CSOS.Tests
     {
         private readonly IProductImageService _productImageService;
         private readonly IProductImageRepository _productImageRepository;
+        private readonly ICachingHelper _cachingHelper;
+        private readonly Mock<ICachingHelper> _cachingHelperMock;
         private readonly Mock<IProductImageRepository> _productImageRepositoryMock;
         private readonly Fixture _fixture;
 
@@ -24,7 +27,9 @@ namespace CSOS.Tests
         {
             _productImageRepositoryMock = new Mock<IProductImageRepository>();
             _productImageRepository = _productImageRepositoryMock.Object;
-            _productImageService = new ProductImageService(_productImageRepository);
+            _cachingHelperMock = new Mock<ICachingHelper>();
+            _cachingHelper = _cachingHelperMock.Object;
+            _productImageService = new ProductImageService(_productImageRepository, _cachingHelper);
             _fixture = new Fixture();
         }
 

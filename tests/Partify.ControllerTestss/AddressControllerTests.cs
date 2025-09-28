@@ -1,5 +1,5 @@
 ﻿using AutoFixture;
-using CSOS.Core.DTO.AddressDto;
+using CSOS.Core.DTO.Address;
 using CSOS.Core.DTO.UniversalDto;
 using CSOS.Core.ResultTypes;
 using CSOS.Core.ServiceContracts;

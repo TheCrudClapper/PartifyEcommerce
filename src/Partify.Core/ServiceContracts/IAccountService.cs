@@ -1,4 +1,4 @@
-﻿using CSOS.Core.DTO.AccountDto;
+﻿using CSOS.Core.DTO.Account;
 using CSOS.Core.ResultTypes;
 using Microsoft.AspNetCore.Identity;
 

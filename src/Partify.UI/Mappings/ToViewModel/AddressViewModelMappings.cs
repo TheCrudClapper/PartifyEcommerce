@@ -1,4 +1,4 @@
-﻿using CSOS.Core.DTO.AddressDto;
+﻿using CSOS.Core.DTO.Address;
 using CSOS.UI.ViewModels.AddressViewModels;
 
 namespace CSOS.UI.Mappings.ToViewModel

@@ -1,6 +1,6 @@
 ﻿using ComputerServiceOnlineShop.Entities.Models.IdentityEntities;
-using CSOS.Core.DTO.AccountDto;
-using CSOS.Core.DTO.AddressDto;
+using CSOS.Core.DTO.Account;
+using CSOS.Core.DTO.Address;
 
 namespace CSOS.Core.Mappings.ToDto
 {

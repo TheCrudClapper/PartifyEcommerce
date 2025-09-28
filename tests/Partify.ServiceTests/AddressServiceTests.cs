@@ -3,10 +3,10 @@ using CSOS.Core.ServiceContracts;
 using Moq;
 using AutoFixture;
 using CSOS.Core.Domain.Entities;
-using CSOS.Core.DTO.AddressDto;
 using CSOS.Core.ResultTypes;
 using CSOS.Core.Services;
 using FluentAssertions;
+using CSOS.Core.DTO.Address;
 
 namespace CSOS.Tests
 {

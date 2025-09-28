@@ -1,5 +1,4 @@
-﻿using CSOS.Core.DTO;
-using CSOS.Core.DTO.DeliveryTypeDto;
+﻿using CSOS.Core.DTO.DeliveryTypeDto;
 using CSOS.Core.DTO.UniversalDto;
 
 namespace CSOS.Core.ServiceContracts
@@ -22,6 +21,6 @@ namespace CSOS.Core.ServiceContracts
         /// Retrieves all active delivery types available in the database.
         /// </summary>
         /// <returns>A list of <see cref="SelectListItemDto"/> representing all available delivery types.</returns>
-        Task<IEnumerable<SelectListItemDto>> GetAllDeliveryTypesAsSelectionList();
+        Task<IEnumerable<SelectListItemDto>> GetAllDeliveryTypesAsSelectList();
     }
 }

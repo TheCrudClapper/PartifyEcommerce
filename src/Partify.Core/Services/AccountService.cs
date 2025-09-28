@@ -1,7 +1,7 @@
 ﻿using ComputerServiceOnlineShop.Entities.Models.IdentityEntities;
 using CSOS.Core.Domain.Entities;
 using CSOS.Core.Domain.RepositoryContracts;
-using CSOS.Core.DTO.AccountDto;
+using CSOS.Core.DTO.Account;
 using CSOS.Core.Mappings.ToDomainEntity.ApplicationUserMappings;
 using CSOS.Core.Mappings.ToDto;
 using CSOS.Core.ResultTypes;

@@ -207,7 +207,7 @@ namespace CSOS.UI.Controllers
                 Items = filteredOffers.Select(item => item.ToOfferIndexItemViewModel(_pictureHandlerService))
                     .ToList(),
 
-                DeliveryOptions = (await _deliveryTypeGetterService.GetAllDeliveryTypesAsSelectionList())
+                DeliveryOptions = (await _deliveryTypeGetterService.GetAllDeliveryTypesAsSelectList())
                     .ToSelectListItem(),
 
                 SortingOptions = _sortingOptionService.GetSortingOptions()

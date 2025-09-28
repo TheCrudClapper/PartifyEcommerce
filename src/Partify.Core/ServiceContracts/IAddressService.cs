@@ -1,4 +1,4 @@
-﻿using CSOS.Core.DTO.AddressDto;
+﻿using CSOS.Core.DTO.Address;
 using CSOS.Core.ResultTypes;
 
 namespace CSOS.Core.ServiceContracts

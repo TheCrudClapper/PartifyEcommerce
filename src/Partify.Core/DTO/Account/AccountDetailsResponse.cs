@@ -1,6 +1,6 @@
-﻿using CSOS.Core.DTO.AddressDto;
+﻿using CSOS.Core.DTO.Address;
 
-namespace CSOS.Core.DTO.AccountDto
+namespace CSOS.Core.DTO.Account
 {
     public class AccountDetailsResponse
     {

@@ -1,4 +1,4 @@
-﻿using CSOS.Core.DTO.AddressDto;
+﻿using CSOS.Core.DTO.Address;
 
 namespace CSOS.UI.ViewModels.OrderViewModels
 {

@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace CSOS.Core.DTO.AccountDto
+namespace CSOS.Core.DTO.Account
 {
     public class PasswordChangeRequest
     {
