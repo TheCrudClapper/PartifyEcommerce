@@ -122,7 +122,7 @@ namespace CSOS.UI.Controllers
                 _logger.LogWarning("Invalid model state. Errors: {Errors}",
                     string.Join(", ", ModelState.Values.SelectMany(item => item.Errors).Select(item => item.ErrorMessage)));
                 await _offerViewModelInitializer.InitializeAllAsync(viewModel);
-                await _offerViewModelInitializer.GetOfferPicturseAsync(viewModel);
+                await _offerViewModelInitializer.GetOfferPicturesAsync(viewModel);
                 return View(viewModel);
             }
 
@@ -188,7 +188,7 @@ namespace CSOS.UI.Controllers
 
             if (response.IsFailure)
             {
-                _logger.LogError("Error while fetching offert to display. Error: {Error}", response.Error.Description);
+                _logger.LogError("Error while fetching offer to display. Error: {Error}", response.Error.Description);
                 return View("Error", response.Error.Description);
             }
                

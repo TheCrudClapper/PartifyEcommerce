@@ -6,6 +6,6 @@
              "Offer.OfferIsNull", "Given offer is null");
 
         public static readonly Error OfferDoesNotExist = new Error(
-            "Offer.OfferDoesNotExist", "Offer doesn not exists");
+            "Offer.OfferDoesNotExist", "Offer does not exists");
     }
 }

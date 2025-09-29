@@ -34,11 +34,11 @@ namespace CSOS.UI.Helpers
             await PopulateConditions<TViewModel>(viewModel);
 
             //if (viewModel is EditOfferViewModel editVm)
-            //    await GetOfferPicturseAsync(editVm);
+            //    await GetOfferPicturesAsync(editVm);
 
         }
 
-        public async Task GetOfferPicturseAsync(EditOfferViewModel viewModel)
+        public async Task GetOfferPicturesAsync(EditOfferViewModel viewModel)
         {
             var images = await _productImageService.GetOfferPicturesAsync(viewModel.Id);
             viewModel.ExistingImagesUrls = images.ToSelectListItemPicture(_pictureHandlerService);

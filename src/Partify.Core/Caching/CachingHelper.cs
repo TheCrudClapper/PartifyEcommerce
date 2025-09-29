@@ -24,6 +24,7 @@ public class CachingHelper : ICachingHelper
         {
 
             T? cachedObj = JsonSerializer.Deserialize<T>(objInBytes);
+            _logger.LogInformation($"Successfully retrived item from cache: {cacheKey}");
             return (true, cachedObj);
         }
         catch (JsonException ex)
@@ -53,6 +54,7 @@ public class CachingHelper : ICachingHelper
     public async Task InvalidateCache(string cacheKey)
     {
         await _distributedCache.RemoveAsync(cacheKey);
+        _logger.LogInformation($"Invalidated obj in cache with key: {cacheKey}");
     }
 
 
