@@ -26,7 +26,6 @@ public class OfferService : IOfferService
     private readonly IUnitOfWork _unitOfWork;
     private readonly ICachingHelper _cachingHelper;
     public OfferService(
-        IDeliveryTypeGetterService deliveryTypeGetterService,
         IUnitOfWork unitOfWork,
         IOfferRepository offerRepo,
         IProductRepository productRepo,
@@ -34,7 +33,6 @@ public class OfferService : IOfferService
         ICurrentUserService currentUserService,
         IPictureHandlerService pictureHandlerService,
         IProductImageService productImageService,
-        ISortingOptionService sortingOptionService,
         ICachingHelper cachingHelper
         )
     {
@@ -64,6 +62,9 @@ public class OfferService : IOfferService
         await AddDeliveryTypesAsync(addRequest, offer);
 
         await _unitOfWork.SaveChangesAsync();
+
+        await _cachingHelper.InvalidateCache("offers:index");
+        await _cachingHelper.InvalidateCache("offers:deals");
         return Result.Success();
     }
     public async Task<Result> Edit(OfferUpdateRequest? updateRequest)
@@ -104,8 +105,9 @@ public class OfferService : IOfferService
 
         await _unitOfWork.SaveChangesAsync();
 
-        string cacheKey = CachingHelper.GenerateCacheKey("offer", updateRequest.Id);
-        await _cachingHelper.InvalidateCache(cacheKey);
+        await _cachingHelper.InvalidateCache($"offer:{updateRequest.Id}");
+        await _cachingHelper.InvalidateCache("offers:index");
+        await _cachingHelper.InvalidateCache("offers:deals");
         return Result.Success();
     }
 
@@ -122,8 +124,9 @@ public class OfferService : IOfferService
 
         await _unitOfWork.SaveChangesAsync();
 
-        string cacheKey = CachingHelper.GenerateCacheKey("offer", id);
-        await _cachingHelper.InvalidateCache(cacheKey);
+        await _cachingHelper.InvalidateCache($"offer:{id}");
+        await _cachingHelper.InvalidateCache("offers:index");
+        await _cachingHelper.InvalidateCache("offers:deals");
         return Result.Success();
     }
 
@@ -152,8 +155,17 @@ public class OfferService : IOfferService
 
     public async Task<IEnumerable<CardResponse>> GetIndexPageOffers()
     {
+        string cacheKey = "offers:index";
+        var objFromCache = await _cachingHelper.GetCachedObject<IEnumerable<CardResponse>>(cacheKey);
+        
+        if(objFromCache.Found)
+            return objFromCache.Value!;
+        
         var offers = await _offerRepo.GetOffersByTakeAsync();
-        return offers.Select(item => item.ToCardResponse());
+        var dtos = offers.Select(item => item.ToCardResponse()).ToList();
+        
+        await _cachingHelper.CacheObject(dtos, cacheKey, CachingProfiles.ShortTTLCacheOption);
+        return dtos;
     }
 
     public async Task<bool> DoesOfferExist(int id)
@@ -163,15 +175,22 @@ public class OfferService : IOfferService
 
     public async Task<IEnumerable<CardResponse>> GetDealsOfTheDay()
     {
+        string cacheKey = "offers:deals";
         var count = await _offerRepo.GetNonPrivateOfferCount();
         if (count == 0)
             return Enumerable.Empty<CardResponse>();
 
         var take = Math.Min(count, 7);
-
+        
+        var objFromCache = await _cachingHelper.GetCachedObject<IEnumerable<CardResponse>>(cacheKey);
+        if(objFromCache.Found)
+            return objFromCache.Value!;
+        
         var offers = await _offerRepo.GetOffersByTakeAsync(take);
+        var dtos =  offers.Select(item => item.ToCardResponse()).ToList();
 
-        return offers.Select(item => item.ToCardResponse());
+        await _cachingHelper.CacheObject(dtos, cacheKey, CachingProfiles.ShortTTLCacheOption);
+        return dtos;
     }
 
     public async Task<Result<OfferResponse>> GetOffer(int id)
