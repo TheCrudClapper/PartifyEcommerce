@@ -21,31 +21,35 @@ namespace CSOS.UI.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create(AddAddressViewModel viewModel)
+        public async Task<IActionResult> Create(AddAddressViewModel viewModel, CancellationToken cancellationToken)
         {
             var request = viewModel.ToAddressAddRequest();
 
-            var result = await _addressService.AddAddress(request);
+            var result = await _addressService.AddAddress(request, cancellationToken);
 
             if(result.IsFailure)
                 return Json( new JsonResponseModel { Message = result.Error.Description, Success = false });
 
-            var editResult = await _addressService.GetUserAddressForEdit();
+            var editResult = await _addressService.GetUserAddressForEdit(cancellationToken);
 
             if (editResult.IsFailure)
                 return Json(new JsonResponseModel { Message = "Address added, but failed to load edit form", Success = false });
 
-            var editViewModel = editResult.Value.ToEditAddressViewModel();
-            editViewModel.CountriesSelectionList = (await _countriesGetterService.GetCountriesSelectionList()).ToSelectListItem();
+            var editViewModel = editResult.Value
+                .ToEditAddressViewModel();
+
+            editViewModel.CountriesSelectionList = (await _countriesGetterService
+                .GetCountriesSelectionList(cancellationToken))
+                .ToSelectListItem();
 
             return PartialView("AccountPartials/_AddressChangeForm", editViewModel);
         }
 
         [HttpGet]
-        public async Task<IActionResult> Edit([FromRoute] int id)
+        public async Task<IActionResult> Edit([FromRoute] int id, CancellationToken cancellationToken)
         {
             _logger.LogInformation("AddressController - GET Edit Method called with ID: {Id}", id);
-            var result = await _addressService.GetUserAddressForEdit();
+            var result = await _addressService.GetUserAddressForEdit(cancellationToken);
 
             if (result.IsFailure)
             {
@@ -53,21 +57,25 @@ namespace CSOS.UI.Controllers
                     User.Identity?.Name, result.Error.Description);
 
                 return View("Error", result.Error.Description);
-            }
-                
+            }   
 
             EditAddressViewModel viewModel = result.Value.ToEditAddressViewModel();
-            viewModel.CountriesSelectionList = (await _countriesGetterService.GetCountriesSelectionList()).ToSelectListItem();
+
+            viewModel.CountriesSelectionList = (await _countriesGetterService
+                .GetCountriesSelectionList(cancellationToken))
+                .ToSelectListItem();
+
             return PartialView("_EditAddressPartial", viewModel);
         }
 
         [HttpPost]
-        public async Task<IActionResult> Edit(EditAddressViewModel viewModel)
+        public async Task<IActionResult> Edit(EditAddressViewModel viewModel, CancellationToken cancellationToken)
         {
             _logger.LogInformation("AddressController - POST Edit Method called");
             if (!ModelState.IsValid)
             {
-                viewModel.CountriesSelectionList = (await _countriesGetterService.GetCountriesSelectionList())
+                viewModel.CountriesSelectionList = (await _countriesGetterService
+                    .GetCountriesSelectionList(cancellationToken))
                     .ToSelectListItem();
 
                 _logger.LogWarning("Invalid model state: {Errors}", string
@@ -82,7 +90,7 @@ namespace CSOS.UI.Controllers
             }
 
             AddressUpdateRequest updateRequest = viewModel.ToAddressUpdateRequest();
-            var result = await _addressService.EditUserAddress(updateRequest);
+            var result = await _addressService.EditUserAddress(updateRequest, cancellationToken);
 
             if (result.IsFailure)
             {

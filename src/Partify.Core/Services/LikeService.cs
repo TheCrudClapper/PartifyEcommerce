@@ -24,18 +24,18 @@ public class LikeService : ILikeService
         _offerRepository = offerRepository;
     }
 
-    public async Task<Result<IEnumerable<LikedOfferResponse>>> GetFilteredUserLikedOffers(string? title)
+    public async Task<Result<IEnumerable<LikedOfferResponse>>> GetFilteredUserLikedOffers(string? title, CancellationToken cancellationToken)
     {
         var userId = _currentUserService.GetCurrentUserIdOrNull();
         if (userId == null)
             return Result.Failure<IEnumerable<LikedOfferResponse>>(AccountErrors.UserIsNotLoggedIn);
 
-        var likedOffers = await _likeOfferRepository.GetAllUserLikedOffersAsync(userId.Value, title);
+        var likedOffers = await _likeOfferRepository.GetAllUserLikedOffersAsync(userId.Value, title, cancellationToken);
 
         return Result.Success(likedOffers.Select(item => item.ToLikeOfferResponse()));
     }
 
-    public async Task<Result<LikeResult>> ToggleLike(int offerId)
+    public async Task<Result<LikeResult>> ToggleLike(int offerId, CancellationToken cancellationToken)
     {
         var userId = _currentUserService.GetUserId();
 
@@ -47,12 +47,12 @@ public class LikeService : ILikeService
         if (offer.SellerId == userId)
             return Result.Failure<LikeResult>(LikeOfferErrors.OwnOfferLiked);
 
-        var existing = await _likeOfferRepository.GetLikedOfferAsync(offerId, userId);
+        var existing = await _likeOfferRepository.GetLikedOfferAsync(offerId, userId, cancellationToken);
 
         if (existing != null && existing.IsActive)
         {
-            await _likeOfferRepository.RemoveLikeAsync(existing);
-            await _unitOfWork.SaveChangesAsync();
+            await _likeOfferRepository.RemoveLikeAsync(existing, cancellationToken);
+            await _unitOfWork.SaveChangesAsync(cancellationToken);
             return new LikeResult(false, "Unliked this offer");
         }
 
@@ -62,8 +62,8 @@ public class LikeService : ILikeService
             UserId = userId,
         };
 
-        await _likeOfferRepository.AddOrReactivateLikeAsync(likedOffer);
-        await _unitOfWork.SaveChangesAsync();
+        await _likeOfferRepository.AddOrReactivateLikeAsync(likedOffer, cancellationToken);
+        await _unitOfWork.SaveChangesAsync(cancellationToken);
         return new LikeResult(true, "Liked this offer!");
     }
 }

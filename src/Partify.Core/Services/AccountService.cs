@@ -82,9 +82,9 @@ public class AccountService : IAccountService
         await _signInManager.SignOutAsync();
     }
 
-    public async Task<Result<AccountResponse>> GetAccount()
+    public async Task<Result<AccountResponse>> GetAccount(CancellationToken cancellationToken)
     {
-        var userResult = await _currentUserService.GetCurrentUserAsync();
+        var userResult = await _currentUserService.GetCurrentUserAsync(cancellationToken);
 
         if (userResult.IsFailure)
             return Result.Failure<AccountResponse>(userResult.Error);
@@ -92,12 +92,12 @@ public class AccountService : IAccountService
         return userResult.Value.ToAccountResponse();
     }
 
-    public async Task<Result> Edit(AccountUpdateRequest? request)
+    public async Task<Result> Edit(AccountUpdateRequest? request, CancellationToken cancellationToken)
     {
         if (request == null)
             return Result.Failure(AccountErrors.MissingAccountUpdateRequest);
 
-        var userResult = await _currentUserService.GetCurrentUserAsync();
+        var userResult = await _currentUserService.GetCurrentUserAsync(cancellationToken);
         if (userResult.IsFailure)
             return Result.Failure(userResult.Error);
 
@@ -110,16 +110,16 @@ public class AccountService : IAccountService
         user.Surname = request.Surname;
         user.DateEdited = DateTime.UtcNow;
 
-        await _unitOfWork.SaveChangesAsync();
+        await _unitOfWork.SaveChangesAsync(cancellationToken);
         return Result.Success();
     }
 
-    public async Task<Result> ChangePassword(PasswordChangeRequest? request)
+    public async Task<Result> ChangePassword(PasswordChangeRequest? request, CancellationToken cancellationToken)
     {
         if (request == null)
             return Result.Failure(AccountErrors.MissingPasswordChangeRequest);
 
-        var userResult = await _currentUserService.GetCurrentUserAsync();
+        var userResult = await _currentUserService.GetCurrentUserAsync(cancellationToken);
         if (userResult.IsFailure)
             return Result.Failure(AccountErrors.AccountNotFound);
 
@@ -136,14 +136,14 @@ public class AccountService : IAccountService
         return Result.Success();
     }
 
-    public async Task<Result<AccountDetailsResponse>> GetAccountDetailsAsync()
+    public async Task<Result<AccountDetailsResponse>> GetAccountDetailsAsync(CancellationToken cancellationToken)
     {
-        var addressResult = await _addressService.GetUserAddressForEdit();
+        var addressResult = await _addressService.GetUserAddressForEdit(cancellationToken);
 
         if (addressResult.IsFailure)
             return Result.Failure<AccountDetailsResponse>(AddressErrors.AddressNotFound);
 
-        var accountResult = await GetAccount();
+        var accountResult = await GetAccount(cancellationToken);
         if (accountResult.IsFailure)
             return Result.Failure<AccountDetailsResponse>(AccountErrors.AccountNotFound);
 
@@ -158,10 +158,10 @@ public class AccountService : IAccountService
         };
     }
 
-    public async Task<bool> DoesCurrentUserHaveAddress()
+    public async Task<bool> DoesCurrentUserHaveAddress(CancellationToken cancellationToken)
     {
         Guid userId = _currentUserService.GetUserId();
-        var result = await _accountRepo.GetUserWithAddressAsync(userId);
+        var result = await _accountRepo.GetUserWithAddressAsync(userId, cancellationToken);
 
         if (result == null || result.Address == null)
             return false;
@@ -181,8 +181,8 @@ public class AccountService : IAccountService
         return await _roleManager.CreateAsync(new ApplicationRole { Name = roleOption.ToRoleName() });
     }
 
-    public Task<bool> IsEmailAlreadyTaken(string email)
+    public Task<bool> IsEmailAlreadyTaken(string email, CancellationToken cancellationToken)
     {
-        return _accountRepo.IsEmailTakenAsync(email);
+        return _accountRepo.IsEmailTakenAsync(email, cancellationToken);
     }
 }

@@ -21,7 +21,7 @@ public class CurrentUserService : ICurrentUserService
         _userManager = userManager;
     }
 
-    public async Task<Result<ApplicationUser>> GetCurrentUserAsync()
+    public async Task<Result<ApplicationUser>> GetCurrentUserAsync(CancellationToken cancellationToken)
     {
         var userId = GetUserId();
         var user = await _userManager.FindByIdAsync(userId.ToString());

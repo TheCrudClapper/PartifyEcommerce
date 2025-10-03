@@ -16,7 +16,10 @@ public class AddressService : IAddressService
     private readonly IAddressRepository _addressRepository;
     private readonly IUnitOfWork _unitOfWork;
 
-    public AddressService(ICurrentUserService currentUserService, IAddressRepository addressRepository, IUnitOfWork unitOfWork, IAccountRepository accountRepository)
+    public AddressService(ICurrentUserService currentUserService,
+        IAddressRepository addressRepository,
+        IUnitOfWork unitOfWork,
+        IAccountRepository accountRepository)
     {
         _currentUserService = currentUserService;
         _addressRepository = addressRepository;
@@ -24,7 +27,7 @@ public class AddressService : IAddressService
         _accountRepository = accountRepository;
     }
 
-    public async Task<Result> AddAddress(AddressAddRequest? request)
+    public async Task<Result> AddAddress(AddressAddRequest? request, CancellationToken cancellationToken)
     {
         if (request == null)
             return Result.Failure(AddressErrors.AddressAddRequestIsNull);
@@ -33,13 +36,13 @@ public class AddressService : IAddressService
 
         Address address = request.ToAddressEntity(currentUserId);
 
-        await _addressRepository.AddAsync(address);
-        await _unitOfWork.SaveChangesAsync();
+        await _addressRepository.AddAsync(address, cancellationToken);
+        await _unitOfWork.SaveChangesAsync(cancellationToken);
 
         return Result.Success();
     }
 
-    public async Task<Result> EditUserAddress(AddressUpdateRequest? request)
+    public async Task<Result> EditUserAddress(AddressUpdateRequest? request, CancellationToken cancellationToken)
     {
         if (request == null)
             return Result.Failure(AddressErrors.MissingAddressUpdateRequest);
@@ -57,14 +60,14 @@ public class AddressService : IAddressService
         address.PostalCity = request.PostalCity;
         address.PostalCode = request.PostalCode;
 
-        await _unitOfWork.SaveChangesAsync();
+        await _unitOfWork.SaveChangesAsync(cancellationToken);
 
         return Result.Success();
     }
 
-    public async Task<Result<AddressResponse>> GetUserAddressForEdit()
+    public async Task<Result<AddressResponse>> GetUserAddressForEdit(CancellationToken cancellationToken)
     {
-        var userAndAddress = await GetCurrentUserWithAddress();
+        var userAndAddress = await GetCurrentUserWithAddress(cancellationToken);
 
         if (userAndAddress == null)
             return Result.Failure<AddressResponse>(AddressErrors.AddressNotFound);
@@ -72,9 +75,9 @@ public class AddressService : IAddressService
         return userAndAddress.ToAddressResponse();
     }
 
-    public async Task<Result<UserAddressDetailsResponse>> GetUserAddressDetails()
+    public async Task<Result<UserAddressDetailsResponse>> GetUserAddressDetails(CancellationToken cancellationToken)
     {
-        var userAndAddress = await GetCurrentUserWithAddress();
+        var userAndAddress = await GetCurrentUserWithAddress(cancellationToken);
 
         if (userAndAddress == null)
             return Result.Failure<UserAddressDetailsResponse>(AddressErrors.MissingAddressData);
@@ -82,21 +85,19 @@ public class AddressService : IAddressService
         return userAndAddress.ToUserAddressDetailsResponse();
     }
 
-    private async Task<ApplicationUser?> GetCurrentUserWithAddress()
+    private async Task<ApplicationUser?> GetCurrentUserWithAddress(CancellationToken cancellationToken)
     {
         var userId = _currentUserService.GetUserId();
-        return await _accountRepository.GetUserWithAddressAsync(userId);
+        return await _accountRepository.GetUserWithAddressAsync(userId, cancellationToken);
     }
 
-    public async Task<Result<AddressResponse>> GetAddress(int addressId)
+    public async Task<Result<AddressResponse>> GetAddress(int addressId, CancellationToken cancellationToken)
     {
-        var address = await _addressRepository.GetAddressByIdAsync(addressId);
+        var address = await _addressRepository.GetAddressByIdAsync(addressId, cancellationToken);
         if (address == null)
             return Result.Failure<AddressResponse>(AddressErrors.AddressNotFound);
 
         return address.ToAddressResponse();
 
     }
-
-   
 }

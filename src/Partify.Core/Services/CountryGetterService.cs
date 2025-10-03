@@ -19,9 +19,9 @@ public class CountryGetterService : ICountriesGetterService
         _cachingHelper = cachingHelper;
     }
 
-    public async Task<IEnumerable<SelectListItemDto>> GetCountriesSelectionList()
+    public async Task<IEnumerable<SelectListItemDto>> GetCountriesSelectionList(CancellationToken cancellationToken)
     {
-        var countriesDto = await GetAllCountriesCachedAsDto();
+        var countriesDto = await GetAllCountriesCachedAsDto(cancellationToken);
 
         var dtos = countriesDto.Select(item => item.ToSelectListItem());
 
@@ -33,13 +33,13 @@ public class CountryGetterService : ICountriesGetterService
     /// Retrieves all countries as DTOs from cache or repository.
     /// Materializes as a List for safe caching.
     /// </summary>
-    public async Task<List<CountryResponse>> GetAllCountriesCachedAsDto()
+    public async Task<List<CountryResponse>> GetAllCountriesCachedAsDto(CancellationToken cancellationToken)
     {
         var objFromCache = await _cachingHelper.GetCachedObject<List<CountryResponse>>(CacheKeyAllCountries);
         if (objFromCache.Found)
             return objFromCache.Value!;
 
-        var countries = await _countryRepository.GetAllCountriesAsync();
+        var countries = await _countryRepository.GetAllCountriesAsync(cancellationToken);
 
         var dtos = countries.Select(item => item.ToCountryReponse()).ToList();
 
