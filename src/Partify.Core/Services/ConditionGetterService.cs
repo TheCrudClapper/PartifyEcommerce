@@ -19,28 +19,31 @@ public class ConditionGetterService : IConditionGetterService
         _cachingHelper = cachingHelper;
     }
 
-    public async Task<IEnumerable<SelectListItemDto>> GetProductConditionsAsSelectList()
+    public async Task<IEnumerable<SelectListItemDto>> GetProductConditionsAsSelectList(CancellationToken cancellationToken)
     {
-        var categoryDtos =  await GetAllConditionsCachedAsDto();
-        return categoryDtos.Select(item => item.ToSelectListItem());
+        var categoryDtos =  await GetAllConditionsCachedAsDto(cancellationToken);
+        return categoryDtos
+            .Select(item => item.ToSelectListItem());
     }
 
     /// <summary>
     /// Retrieves all conditions as DTOs from cache or repository.
     /// Materializes as a List for safe caching.
     /// </summary>
-    private async Task<List<ConditionResponse>> GetAllConditionsCachedAsDto()
+    private async Task<List<ConditionResponse>> GetAllConditionsCachedAsDto(CancellationToken cancellationToken)
     {
-        var objFromCache = await _cachingHelper.GetCachedObject<List<ConditionResponse>>(CacheKeyAllConditions);
+        var objFromCache = await _cachingHelper
+            .GetCachedObject<List<ConditionResponse>>(CacheKeyAllConditions, cancellationToken);
         if (objFromCache.Found)
             return objFromCache.Value!;
 
-        var conditions = await _conditionRepo.GetAllConditionsAsync();
+        var conditions = await _conditionRepo.GetAllConditionsAsync(cancellationToken);
 
         var dtos = conditions.Select(item => item.ToConditionResponse())
             .ToList();
 
-        await _cachingHelper.CacheObject(dtos, CacheKeyAllConditions, CachingProfiles.LongTTLCacheOption);
+        await _cachingHelper
+            .CacheObject(dtos, CacheKeyAllConditions, CachingProfiles.LongTTLCacheOption, cancellationToken);
         return dtos;
     }
 }

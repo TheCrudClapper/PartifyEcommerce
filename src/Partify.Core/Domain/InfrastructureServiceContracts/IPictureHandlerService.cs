@@ -14,7 +14,7 @@ namespace CSOS.Core.Domain.InfrastructureServiceContracts
         /// <param name="uploadedImages">A list of uploaded images to be saved. Each image must be a valid <see cref="IFormFile"/> object.</param>
         /// <returns>A task that represents the asynchronous operation. The task result contains a list of file paths where the
         /// images were saved.</returns>
-        Task<List<string>> SavePicturesToDirectory(List<IFormFile> uploadedImages);
+        Task<List<string>> SavePicturesToDirectory(List<IFormFile> uploadedImages, CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Validates the file extensions of the uploaded images.

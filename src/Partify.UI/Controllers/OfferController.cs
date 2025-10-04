@@ -66,22 +66,23 @@ public class OfferController : Controller
         if (!userHasAddress)
         {
             ModelState.AddModelError(string.Empty, "You must add your address before creating an offer.");
-            await _offerViewModelInitializer.InitializeAllAsync(viewModel);
+            await _offerViewModelInitializer.InitializeAllAsync(viewModel,cancellationToken);
             return View(viewModel);
         }
 
         if (!ModelState.IsValid)
         {
-            await _offerViewModelInitializer.InitializeAllAsync(viewModel);
+            await _offerViewModelInitializer.InitializeAllAsync(viewModel, cancellationToken);
 
             _logger.LogWarning("Invalid Model state. Errors {Errors}",
-                string.Join(", ", ModelState.Values.SelectMany(item => item.Errors).Select(item => item.ErrorMessage)));
+                string.Join(", ", ModelState.Values.SelectMany(item => item.Errors)
+                .Select(item => item.ErrorMessage)));
 
             return View(viewModel);
         }
 
         OfferAddRequest dto = viewModel.ToAddOfferDto();
-        var result = await _offerService.Add(dto);
+        var result = await _offerService.Add(dto,cancellationToken);
 
         if (result.IsFailure)
         {
@@ -95,10 +96,10 @@ public class OfferController : Controller
     }
 
     [HttpGet]
-    public async Task<IActionResult> Edit([FromRoute] int id)
+    public async Task<IActionResult> Edit([FromRoute] int id, CancellationToken cancellationToken)
     {
         _logger.LogInformation("OfferControler - GET Edit Method called with parameters {OfferId}", id);
-        var response = await _offerService.GetOfferForEdit(id);
+        var response = await _offerService.GetOfferForEdit(id, cancellationToken);
 
         if (response.IsFailure)
         {
@@ -107,27 +108,30 @@ public class OfferController : Controller
         }
 
         var viewModel = response.Value.ToEditOfferViewModel(_pictureHandlerService);
-        await _offerViewModelInitializer.InitializeAllAsync(viewModel);
+        await _offerViewModelInitializer.InitializeAllAsync(viewModel, cancellationToken);
         return View(viewModel);
     }
 
     [HttpPost]
     [ServiceFilter(typeof(ValidatePicturesFilter))]
-    public async Task<IActionResult> Edit(EditOfferViewModel viewModel)
+    public async Task<IActionResult> Edit(EditOfferViewModel viewModel, CancellationToken cancellationToken)
     {
         _logger.LogInformation("POST Edit called by user {User} with view model {@ViewModel}", User.Identity?.Name, viewModel);
 
         if (!ModelState.IsValid)
         {
             _logger.LogWarning("Invalid model state. Errors: {Errors}",
-                string.Join(", ", ModelState.Values.SelectMany(item => item.Errors).Select(item => item.ErrorMessage)));
-            await _offerViewModelInitializer.InitializeAllAsync(viewModel);
-            await _offerViewModelInitializer.GetOfferPicturesAsync(viewModel);
+                string.Join(", ", ModelState.Values
+                .SelectMany(item => item.Errors)
+                .Select(item => item.ErrorMessage)));
+
+            await _offerViewModelInitializer.InitializeAllAsync(viewModel, cancellationToken);
+            await _offerViewModelInitializer.GetOfferPicturesAsync(viewModel, cancellationToken);
             return View(viewModel);
         }
 
         var dto = viewModel.ToEditOfferDto();
-        var result = await _offerService.Edit(dto);
+        var result = await _offerService.Edit(dto, cancellationToken);
 
         if (result.IsFailure)
         {
@@ -141,10 +145,10 @@ public class OfferController : Controller
     }
 
     [HttpPost]
-    public async Task<IActionResult> Delete([FromRoute] int id)
+    public async Task<IActionResult> Delete([FromRoute] int id, CancellationToken cancellationToken)
     {
         _logger.LogInformation("OfferControler - POST Delete Method called with parameter: OfferId: {Param}", id);
-        var result = await _offerService.DeleteOffer(id);
+        var result = await _offerService.DeleteOffer(id, cancellationToken);
 
         if (result.IsFailure)
         {
@@ -159,10 +163,10 @@ public class OfferController : Controller
     }
 
     [HttpGet]
-    public async Task<IActionResult> UserOffers(string? title)
+    public async Task<IActionResult> UserOffers(string? title, CancellationToken cancellationToken)
     {
         _logger.LogInformation("OfferControler - GET UserOffers Method called with parameters: Title: {Title}", title);
-        IEnumerable<UserOfferResponse> response = await _offerService.GetFilteredUserOffers(title);
+        IEnumerable<UserOfferResponse> response = await _offerService.GetFilteredUserOffers(title, cancellationToken);
         IEnumerable<UserOffersViewModel> userOffers = response
             .Select(item => item.ToUserOffersViewModel(_pictureHandlerService));
 
@@ -170,10 +174,10 @@ public class OfferController : Controller
     }
 
     [HttpGet]
-    public async Task<IActionResult> FilterUserOffers(string? title)
+    public async Task<IActionResult> FilterUserOffers(string? title, CancellationToken cancellationToken)
     {
         _logger.LogInformation("OfferControler - GET FilterUserOffers Method called with parameters: Title: {Title}", title);
-        IEnumerable<UserOfferResponse> response = await _offerService.GetFilteredUserOffers(title);
+        IEnumerable<UserOfferResponse> response = await _offerService.GetFilteredUserOffers(title, cancellationToken);
         IEnumerable<UserOffersViewModel> viewModel = response
             .Select(item => item.ToUserOffersViewModel(_pictureHandlerService));
         return PartialView("OfferPartials/_UserOfferListPartial", viewModel);
@@ -181,10 +185,10 @@ public class OfferController : Controller
 
     [HttpGet]
     [AllowAnonymous]
-    public async Task<IActionResult> Details([FromRoute] int id)
+    public async Task<IActionResult> Details([FromRoute] int id, CancellationToken cancellationToken)
     {
         _logger.LogInformation("OfferControler - GET Details Method called with parameters: OfferId: {OfferId}", id);
-        var response = await _offerService.GetOffer(id);
+        var response = await _offerService.GetOffer(id, cancellationToken);
 
         if (response.IsFailure)
         {
@@ -198,10 +202,10 @@ public class OfferController : Controller
 
     [HttpGet]
     [AllowAnonymous]
-    public async Task<IActionResult> Index([FromQuery] OfferFilter filter)
+    public async Task<IActionResult> Index([FromQuery] OfferFilter filter, CancellationToken cancellationToken)
     {
         _logger.LogInformation("OfferControler - GET Index Method called with parameters: {@OfferFilter}", filter);
-        IEnumerable<OfferIndexResponse> filteredOffers = await _offerService.GetFilteredOffers(filter);
+        IEnumerable<OfferIndexResponse> filteredOffers = await _offerService.GetFilteredOffers(filter, cancellationToken);
         OfferIndexViewModel viewModel = new OfferIndexViewModel()
         {
             Items = filteredOffers.Select(item => item.ToOfferIndexItemViewModel(_pictureHandlerService))
@@ -220,10 +224,10 @@ public class OfferController : Controller
 
     [HttpGet]
     [AllowAnonymous]
-    public async Task<IActionResult> FilterOffers([FromQuery] OfferFilter filter)
+    public async Task<IActionResult> FilterOffers([FromQuery] OfferFilter filter, CancellationToken cancellationToken)
     {
         _logger.LogInformation("OfferControler - GET FilterOffers Method called with parameters: {@OfferFilter}", filter);
-        IEnumerable<OfferIndexResponse> filteredOffers = await _offerService.GetFilteredOffers(filter);
+        IEnumerable<OfferIndexResponse> filteredOffers = await _offerService.GetFilteredOffers(filter, cancellationToken);
         var viewModel = filteredOffers.Select(item => item.ToOfferIndexItemViewModel(_pictureHandlerService));
         return PartialView("OfferPartials/_OfferListPartial", viewModel);
     }

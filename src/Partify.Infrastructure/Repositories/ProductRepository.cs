@@ -2,18 +2,18 @@
 using CSOS.Core.Domain.RepositoryContracts;
 using CSOS.Infrastructure.DbContext;
 
-namespace CSOS.Infrastructure.Repositories
+namespace CSOS.Infrastructure.Repositories;
+
+public class ProductRepository : IProductRepository
 {
-    public class ProductRepository : IProductRepository
+    private readonly DatabaseContext _dbContext;
+    public ProductRepository(DatabaseContext dbContext)
     {
-        private readonly DatabaseContext _dbContext;
-        public ProductRepository(DatabaseContext dbContext)
-        {
-            _dbContext = dbContext;
-        }
-        public async Task AddAsync(Product entity)
-        {
-            await _dbContext.Products.AddAsync(entity);
-        }
+        _dbContext = dbContext;
+    }
+    public async Task AddAsync(Product entity, CancellationToken cancellationToken)
+    {
+        await _dbContext.Products
+            .AddAsync(entity, cancellationToken);
     }
 }

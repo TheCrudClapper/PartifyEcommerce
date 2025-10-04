@@ -35,7 +35,9 @@ public class CountryGetterService : ICountriesGetterService
     /// </summary>
     public async Task<List<CountryResponse>> GetAllCountriesCachedAsDto(CancellationToken cancellationToken)
     {
-        var objFromCache = await _cachingHelper.GetCachedObject<List<CountryResponse>>(CacheKeyAllCountries);
+        var objFromCache = await _cachingHelper
+            .GetCachedObject<List<CountryResponse>>(CacheKeyAllCountries, cancellationToken);
+
         if (objFromCache.Found)
             return objFromCache.Value!;
 
@@ -43,7 +45,8 @@ public class CountryGetterService : ICountriesGetterService
 
         var dtos = countries.Select(item => item.ToCountryReponse()).ToList();
 
-        await _cachingHelper.CacheObject(dtos,CacheKeyAllCountries, CachingProfiles.LongTTLCacheOption);
+        await _cachingHelper
+            .CacheObject(dtos,CacheKeyAllCountries, CachingProfiles.LongTTLCacheOption, cancellationToken);
         return dtos;
     }
 }

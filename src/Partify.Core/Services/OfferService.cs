@@ -45,35 +45,39 @@ public class OfferService : IOfferService
         _productImageService = productImageService;
         _cachingHelper = cachingHelper;
     }
-    public async Task<Result> Add(OfferAddRequest? addRequest)
+    public async Task<Result> Add(OfferAddRequest? addRequest, CancellationToken cancellationToken)
     {
+        cancellationToken.ThrowIfCancellationRequested();
+
         if (addRequest == null)
             return Result.Failure(OfferErrors.OfferIsNull);
 
         Guid userId = _currentUserService.GetUserId();
 
         Offer offer = addRequest.ToOfferEntity(userId);
-        await _offerRepo.AddAsync(offer);
+        await _offerRepo.AddAsync(offer, cancellationToken);
 
         Product product = addRequest.ToProductEntity(offer);
-        await _productRepo.AddAsync(product);
+        await _productRepo.AddAsync(product, cancellationToken);
 
-        await SaveNewImagesAsync(addRequest, product);
-        await AddDeliveryTypesAsync(addRequest, offer);
+        await SaveNewImagesAsync(addRequest, product, cancellationToken);
+        await AddDeliveryTypesAsync(addRequest, offer, cancellationToken);
 
-        await _unitOfWork.SaveChangesAsync();
+        await _unitOfWork.SaveChangesAsync(cancellationToken);
 
         await _cachingHelper.InvalidateCache("offers:index");
         await _cachingHelper.InvalidateCache("offers:deals");
         return Result.Success();
     }
-    public async Task<Result> Edit(OfferUpdateRequest? updateRequest)
+    public async Task<Result> Edit(OfferUpdateRequest? updateRequest, CancellationToken cancellationToken)
     {
+        cancellationToken.ThrowIfCancellationRequested();
+
         if (updateRequest == null)
             return Result.Failure(OfferErrors.OfferIsNull);
 
         Guid userId = _currentUserService.GetUserId();
-        var offer = await _offerRepo.GetOfferWithDetailsToEditAsync(updateRequest.Id, userId);
+        var offer = await _offerRepo.GetOfferWithDetailsToEditAsync(updateRequest.Id, userId, cancellationToken);
 
         if (offer == null)
             return Result.Failure(OfferErrors.OfferDoesNotExist);
@@ -95,15 +99,15 @@ public class OfferService : IOfferService
         if (pictureDeleteResult.IsFailure)
             return Result.Failure(pictureDeleteResult.Error);
 
-        await SaveNewImagesAsync(updateRequest, product);
+        await SaveNewImagesAsync(updateRequest, product, cancellationToken);
 
         //clean existing deliveries for offer
         offer.OfferDeliveryTypes.Clear();
 
         //add new ones
-        await AddDeliveryTypesAsync(updateRequest, offer);
+        await AddDeliveryTypesAsync(updateRequest, offer, cancellationToken);
 
-        await _unitOfWork.SaveChangesAsync();
+        await _unitOfWork.SaveChangesAsync(cancellationToken);
 
         await _cachingHelper.InvalidateCache($"offer:{updateRequest.Id}");
         await _cachingHelper.InvalidateCache("offers:index");
@@ -111,10 +115,12 @@ public class OfferService : IOfferService
         return Result.Success();
     }
 
-    public async Task<Result> DeleteOffer(int id)
+    public async Task<Result> DeleteOffer(int id, CancellationToken cancellationToken)
     {
+        cancellationToken.ThrowIfCancellationRequested();
+
         Guid userId = _currentUserService.GetUserId();
-        var offer = await _offerRepo.GetUserOfferByIdAsync(id, userId);
+        var offer = await _offerRepo.GetUserOfferByIdAsync(id, userId, cancellationToken);
 
         if (offer == null)
             return Result.Failure(OfferErrors.OfferDoesNotExist);
@@ -122,7 +128,7 @@ public class OfferService : IOfferService
         offer.DateDeleted = DateTime.UtcNow;
         offer.IsActive = false;
 
-        await _unitOfWork.SaveChangesAsync();
+        await _unitOfWork.SaveChangesAsync(cancellationToken);
 
         await _cachingHelper.InvalidateCache($"offer:{id}");
         await _cachingHelper.InvalidateCache("offers:index");
@@ -130,77 +136,98 @@ public class OfferService : IOfferService
         return Result.Success();
     }
 
-    public async Task<IEnumerable<UserOfferResponse>> GetFilteredUserOffers(string? title)
+    public async Task<IEnumerable<UserOfferResponse>> GetFilteredUserOffers(string? title, CancellationToken cancellationToken)
     {
+        cancellationToken.ThrowIfCancellationRequested();
+
         Guid userId = _currentUserService.GetUserId();
-        var offers = await _offerRepo.GetFilteredUserOffersAsync(title, userId);
+        var offers = await _offerRepo.GetFilteredUserOffersAsync(title, userId, cancellationToken);
         return offers.Select(item => item.ToUserOfferResponse());
     }
 
-    public async Task<Result<EditOfferResponse>> GetOfferForEdit(int id)
+    public async Task<Result<EditOfferResponse>> GetOfferForEdit(int id, CancellationToken cancellationToken)
     {
+        cancellationToken.ThrowIfCancellationRequested();
+
         Guid userId = _currentUserService.GetUserId();
-        var offer = await _offerRepo.GetOfferWithAllDetailsByUserAsync(id, userId);
+        var offer = await _offerRepo.GetOfferWithAllDetailsByUserAsync(id, userId, cancellationToken);
         if (offer == null)
             return Result.Failure<EditOfferResponse>(OfferErrors.OfferDoesNotExist);
 
         return offer.ToEditOfferResponse();
     }
 
-    public async Task<IEnumerable<OfferIndexResponse>> GetFilteredOffers(OfferFilter filter)
+    public async Task<IEnumerable<OfferIndexResponse>> GetFilteredOffers(OfferFilter filter, CancellationToken cancellationToken)
     {
-        var offers = await _offerRepo.GetFilteredOffersAsync(filter);
+        cancellationToken.ThrowIfCancellationRequested();
+
+        var offers = await _offerRepo.GetFilteredOffersAsync(filter, cancellationToken);
         return offers.Select(item => item.ToOfferIndexResponse());
     }
 
-    public async Task<IEnumerable<CardResponse>> GetIndexPageOffers()
+    public async Task<IEnumerable<CardResponse>> GetIndexPageOffers(CancellationToken cancellationToken)
     {
+        cancellationToken.ThrowIfCancellationRequested();
+
         string cacheKey = "offers:index";
-        var objFromCache = await _cachingHelper.GetCachedObject<IEnumerable<CardResponse>>(cacheKey);
+        var objFromCache = await _cachingHelper.GetCachedObject<IEnumerable<CardResponse>>(cacheKey, cancellationToken);
         
         if(objFromCache.Found)
             return objFromCache.Value!;
         
-        var offers = await _offerRepo.GetOffersByTakeAsync();
-        var dtos = offers.Select(item => item.ToCardResponse()).ToList();
+        var offers = await _offerRepo.GetOffersByTakeAsync(12, cancellationToken);
+        var dtos = offers
+            .Select(item => item.ToCardResponse())
+            .ToList();
         
-        await _cachingHelper.CacheObject(dtos, cacheKey, CachingProfiles.ShortTTLCacheOption);
+        await _cachingHelper.CacheObject(dtos, cacheKey, CachingProfiles.ShortTTLCacheOption, cancellationToken);
         return dtos;
     }
 
-    public async Task<bool> DoesOfferExist(int id)
+    public async Task<bool> DoesOfferExist(int id, CancellationToken cancellationToken)
     {
-        return await _offerRepo.IsOfferInDbAsync(id);
+        cancellationToken.ThrowIfCancellationRequested();
+        return await _offerRepo.IsOfferInDatabaseAsync(id, cancellationToken);
     }
 
-    public async Task<IEnumerable<CardResponse>> GetDealsOfTheDay()
+    public async Task<IEnumerable<CardResponse>> GetDealsOfTheDay(CancellationToken cancellationToken)
     {
+        cancellationToken.ThrowIfCancellationRequested();
+
         string cacheKey = "offers:deals";
-        var count = await _offerRepo.GetNonPrivateOfferCount();
+        var count = await _offerRepo.GetNonPrivateOfferCount(cancellationToken);
         if (count == 0)
             return Enumerable.Empty<CardResponse>();
 
         var take = Math.Min(count, 7);
         
-        var objFromCache = await _cachingHelper.GetCachedObject<IEnumerable<CardResponse>>(cacheKey);
+        var objFromCache = await _cachingHelper
+            .GetCachedObject<IEnumerable<CardResponse>>(cacheKey, cancellationToken);
         if(objFromCache.Found)
             return objFromCache.Value!;
         
-        var offers = await _offerRepo.GetOffersByTakeAsync(take);
-        var dtos =  offers.Select(item => item.ToCardResponse()).ToList();
+        var offers = await _offerRepo.GetOffersByTakeAsync(take, cancellationToken);
+        var dtos =  offers
+            .Select(item => item.ToCardResponse())
+            .ToList();
 
-        await _cachingHelper.CacheObject(dtos, cacheKey, CachingProfiles.ShortTTLCacheOption);
+        await _cachingHelper
+            .CacheObject(dtos, cacheKey, CachingProfiles.ShortTTLCacheOption, cancellationToken);
         return dtos;
     }
 
-    public async Task<Result<OfferResponse>> GetOffer(int id)
+    public async Task<Result<OfferResponse>> GetOffer(int id, CancellationToken cancellationToken)
     {
+        cancellationToken.ThrowIfCancellationRequested();
+
         string cacheKey = CachingHelper.GenerateCacheKey("offer", id);
-        var objFromCache = await _cachingHelper.GetCachedObject<OfferResponse>(cacheKey);
+        var objFromCache = await _cachingHelper
+            .GetCachedObject<OfferResponse>(cacheKey, cancellationToken);
+
         if (objFromCache.Found)
             return objFromCache.Value;
 
-        var offer = await _offerRepo.GetOfferWithAllDetailsAsync(id);
+        var offer = await _offerRepo.GetOfferWithAllDetailsAsync(id, cancellationToken);
 
         if (offer == null || offer.IsOfferPrivate)
             return Result.Failure<OfferResponse>(OfferErrors.OfferDoesNotExist);
@@ -208,14 +235,18 @@ public class OfferService : IOfferService
         var userId = _currentUserService.GetCurrentUserIdOrNull();
 
         var response = offer.ToOfferResponse(userId);
-        await _cachingHelper.CacheObject(response, cacheKey, CachingProfiles.LongTTLCacheOption);
+
+        await _cachingHelper
+            .CacheObject(response, cacheKey, CachingProfiles.LongTTLCacheOption, cancellationToken);
 
         return response;
     }
 
-    private async Task SaveNewImagesAsync(IOfferImageDto dto, Product product)
+    private async Task SaveNewImagesAsync(IOfferImageDto dto, Product product, CancellationToken cancellationToken)
     {
-        dto.UploadedImagesUrls = await _pictureHandlerService.SavePicturesToDirectory(dto.UploadedImages);
+        cancellationToken.ThrowIfCancellationRequested();
+
+        dto.UploadedImagesUrls = await _pictureHandlerService.SavePicturesToDirectory(dto.UploadedImages, cancellationToken);
 
         if (dto.UploadedImagesUrls?.Count > 0)
         {
@@ -233,17 +264,20 @@ public class OfferService : IOfferService
         }
     }
 
-    private async Task AddDeliveryTypesAsync(IOfferDeliveryDto dto, Offer offer)
+    private async Task AddDeliveryTypesAsync(IOfferDeliveryDto dto, Offer offer, CancellationToken cancellationToken)
     {
+        cancellationToken.ThrowIfCancellationRequested();
+
         if (dto.SelectedParcelLocker.HasValue)
         {
             var parcelLockerDelivery = dto.ToOfferDeliveryTypeEntity(offer);
-            await _offerDeliveryTypeRepo.AddAsync(parcelLockerDelivery);
+            await _offerDeliveryTypeRepo.AddAsync(parcelLockerDelivery, cancellationToken);
         }
 
         var deliveryTypes = dto.SelectedOtherDeliveries
             .Select(deliveryId => deliveryId.ToOfferDeliveryTypeEntity(offer));
 
-        await _offerDeliveryTypeRepo.AddRangeAsync(deliveryTypes);
+        await _offerDeliveryTypeRepo
+            .AddRangeAsync(deliveryTypes, cancellationToken);
     }
 }

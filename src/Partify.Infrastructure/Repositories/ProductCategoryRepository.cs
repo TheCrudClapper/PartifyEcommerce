@@ -3,20 +3,19 @@ using CSOS.Core.Domain.RepositoryContracts;
 using CSOS.Infrastructure.DbContext;
 using Microsoft.EntityFrameworkCore;
 
-namespace CSOS.Infrastructure.Repositories
+namespace CSOS.Infrastructure.Repositories;
+
+public class ProductCategoryRepository : IProductCategoryRepository
 {
-    public class ProductCategoryRepository : IProductCategoryRepository
+    private readonly DatabaseContext _dbContext;
+    public ProductCategoryRepository(DatabaseContext databaseContext)
     {
-        private readonly DatabaseContext _dbContext;
-        public ProductCategoryRepository(DatabaseContext databaseContext)
-        {
-            _dbContext = databaseContext;
-        }
-        public async Task<IEnumerable<ProductCategory>> GetAllProductCategoriesAsync()
-        {
-            return await _dbContext.ProductCategories
-                .Where(item => item.IsActive)
-                .ToListAsync();
-        }
+        _dbContext = databaseContext;
+    }
+    public async Task<IEnumerable<ProductCategory>> GetAllProductCategoriesAsync(CancellationToken cancellationToken)
+    {
+        return await _dbContext.ProductCategories
+            .Where(item => item.IsActive)
+            .ToListAsync(cancellationToken);
     }
 }

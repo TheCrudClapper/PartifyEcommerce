@@ -1,20 +1,19 @@
 ﻿using CSOS.Core.Domain.RepositoryContracts;
 using CSOS.Infrastructure.DbContext;
 
-namespace CSOS.Infrastructure.Repositories
+namespace CSOS.Infrastructure.Repositories;
+
+public class UnitOfWork : IUnitOfWork
 {
-    public class UnitOfWork : IUnitOfWork
+    private readonly DatabaseContext _dbContext;
+
+    public UnitOfWork(DatabaseContext dbContext)
     {
-        private readonly DatabaseContext _dbContext;
+        _dbContext = dbContext;
+    }
 
-        public UnitOfWork(DatabaseContext dbContext)
-        {
-            _dbContext = dbContext;
-        }
-
-        public Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
-        {
-            return _dbContext.SaveChangesAsync(cancellationToken);
-        }
+    public Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
+    {
+        return _dbContext.SaveChangesAsync(cancellationToken);
     }
 }

@@ -13,29 +13,33 @@ public class CartService : ICartService
     private readonly IUnitOfWork _unitOfWork;
     private readonly ICurrentUserService _currentUserService;
     private readonly IOfferRepository _offerRepo;
-    public CartService(ICurrentUserService currentUserService, IOfferRepository offerRepository, ICartRepository cartRepository, IUnitOfWork unitOfWork)
+    public CartService(ICurrentUserService currentUserService,
+        IOfferRepository offerRepository,
+        ICartRepository cartRepository,
+        IUnitOfWork unitOfWork)
     {
         _cartRepo = cartRepository;
         _offerRepo = offerRepository;
         _currentUserService = currentUserService;
         _unitOfWork = unitOfWork;
     }
-    public async Task<Result> AddToCart(int offerId, int quantity = 1)
+    public async Task<Result> AddToCart(int offerId, int quantity = 1, CancellationToken cancellationToken = default)
     {
         if (quantity <= 0)
             return Result.Failure(CartItemErrors.QuantityLowerThanZero);
 
-        var offer = await _offerRepo.GetOfferByIdAsync(offerId);
+        var offer = await _offerRepo.GetOfferByIdAsync(offerId, cancellationToken);
 
         if (offer == null)
             return Result.Failure(OfferErrors.OfferDoesNotExist);
 
-        var cartIdResult = await GetLoggedUserCartId();
+        var cartIdResult = await GetLoggedUserCartId(cancellationToken);
 
         if(cartIdResult.IsFailure)
             return Result.Failure(cartIdResult.Error);
 
-        var existingCartItem = await _cartRepo.GetCartItemAsync(cartIdResult.Value, offer.Id);
+        var existingCartItem = await _cartRepo
+            .GetCartItemAsync(cartIdResult.Value, offer.Id, cancellationToken);
 
         if (existingCartItem != null)
         {
@@ -61,10 +65,10 @@ public class CartService : ICartService
                 Quantity = quantity,
             };
 
-            await _cartRepo.AddAsync(cartItem);
+            await _cartRepo.AddAsync(cartItem, cancellationToken);
         }
 
-        var result = await SaveAndUpdateCart(cartIdResult.Value);
+        var result = await SaveAndUpdateCart(cartIdResult.Value, cancellationToken);
 
         if (result.IsFailure)
             return Result.Failure(result.Error);
@@ -72,9 +76,9 @@ public class CartService : ICartService
         return Result.Success();
     }
 
-    public async Task<Result> DeleteFromCart(int cartItemId)
+    public async Task<Result> DeleteFromCart(int cartItemId, CancellationToken cancellationToken)
     {
-        var cartItem = await _cartRepo.GetCartItemByIdAsync(cartItemId);
+        var cartItem = await _cartRepo.GetCartItemByIdAsync(cartItemId, cancellationToken);
 
         if (cartItem == null)
             return Result.Failure(CartItemErrors.CartItemDoesNotExists);
@@ -85,7 +89,7 @@ public class CartService : ICartService
         cartItem.IsActive = false;
         cartItem.DateDeleted = DateTime.UtcNow;
 
-        var result = await SaveAndUpdateCart(cartId);
+        var result = await SaveAndUpdateCart(cartId, cancellationToken);
 
         if (result.IsFailure)
             return Result.Failure(result.Error);
@@ -93,14 +97,14 @@ public class CartService : ICartService
         return Result.Success();
     }
 
-    public async Task<Result<CartResponseDto>> GetLoggedUserCart()
+    public async Task<Result<CartResponseDto>> GetLoggedUserCart(CancellationToken cancellationToken)
     {
-        var cartIdResult = await GetLoggedUserCartId();
+        var cartIdResult = await GetLoggedUserCartId(cancellationToken);
 
         if (cartIdResult.IsFailure)
             return Result.Failure<CartResponseDto>(cartIdResult.Error);
 
-        var cart = await _cartRepo.GetCartWithAllDetailsAsync(cartIdResult.Value);
+        var cart = await _cartRepo.GetCartWithAllDetailsAsync(cartIdResult.Value, cancellationToken);
 
         if (cart == null)
             return Result.Failure<CartResponseDto>(CartErrors.CartDoesNotExist(cartIdResult.Value));
@@ -110,11 +114,11 @@ public class CartService : ICartService
         return dto;
     }
 
-    public async Task<Result<int>> GetLoggedUserCartId()
+    public async Task<Result<int>> GetLoggedUserCartId(CancellationToken cancellationToken)
     {
         Guid userId = _currentUserService.GetUserId();
 
-        var cartId = await _cartRepo.GetLoggedUserCartIdAsync(userId);
+        var cartId = await _cartRepo.GetLoggedUserCartIdAsync(userId, cancellationToken);
 
         if (!cartId.HasValue) 
             return Result.Failure<int>(CartErrors.CartDoesNotExists);
@@ -122,22 +126,25 @@ public class CartService : ICartService
         return cartId.Value;
     }
 
-    public async Task<Result> UpdateTotalCartValue(int cartId)
+    public async Task<Result> UpdateTotalCartValue(int cartId, CancellationToken cancellationToken)
     {
-        IEnumerable<CartItem>? cartItems = await _cartRepo.GetCartItemsForCostsUpdateAsync(cartId);
+        cancellationToken.ThrowIfCancellationRequested();
+
+        IEnumerable<CartItem>? cartItems = await _cartRepo
+            .GetCartItemsForCostsUpdateAsync(cartId, cancellationToken);
         
         if(cartItems == null)
             return Result.Failure(CartErrors.CartDoesNotExists);
 
         //return early, bc nothing to calculate here
-        if (cartItems.Count() == 0)
+        if (!cartItems.Any())
             return Result.Success();
 
         var totalValue = CalculateItemsTotal(cartItems);
 
         var minimalDeliveryValue = CalculateMinimalDeliveryCost(cartItems);
 
-        var cart = await _cartRepo.GetCartByIdAsync(cartId);
+        var cart = await _cartRepo.GetCartByIdAsync(cartId, cancellationToken);
 
         if (cart == null)
             return Result.Failure(CartErrors.CartDoesNotExists);
@@ -146,13 +153,13 @@ public class CartService : ICartService
         cart.TotalCartValue = totalValue + minimalDeliveryValue;
         cart.MinimalDeliveryValue = minimalDeliveryValue;
 
-        await _unitOfWork.SaveChangesAsync();
+        await _unitOfWork.SaveChangesAsync(cancellationToken);
         return Result.Success();
     }
 
-    public async Task<Result> UpdateCartItemQuantity(int cartItemId, int quantity)
+    public async Task<Result> UpdateCartItemQuantity(int cartItemId, int quantity, CancellationToken cancellationToken)
     {
-        var existingItem = await _cartRepo.GetCartItemWithOfferAsync(cartItemId);
+        var existingItem = await _cartRepo.GetCartItemWithOfferAsync(cartItemId, cancellationToken);
 
         if (existingItem == null)
             return Result.Failure(CartItemErrors.CartItemDoesNotExists);
@@ -162,7 +169,7 @@ public class CartService : ICartService
 
         if (quantity <= 0)
         {
-            return await DeleteFromCart(cartItemId);
+            return await DeleteFromCart(cartItemId, cancellationToken);
         }
 
         if (quantity <= existingItem.Offer.StockQuantity)
@@ -177,7 +184,7 @@ public class CartService : ICartService
             return Result.Failure(CartItemErrors.CannotAddMoreToCart);
         }
 
-        var result = await  SaveAndUpdateCart(existingItem.CartId);
+        var result = await SaveAndUpdateCart(existingItem.CartId, cancellationToken);
 
         if (result.IsFailure)
             return Result.Failure(result.Error);
@@ -185,14 +192,14 @@ public class CartService : ICartService
         return Result.Success();
     }
 
-    public async Task<int> GetCartItemsQuantity()
+    public async Task<int> GetCartItemsQuantity(CancellationToken cancellationToken)
     {
-        var cartIdResult = await GetLoggedUserCartId();
+        var cartIdResult = await GetLoggedUserCartId(cancellationToken);
 
         if (cartIdResult.IsFailure)
             return 0;
 
-        return await _cartRepo.GetCartItemsQuantityAsync(cartIdResult.Value);
+        return await _cartRepo.GetCartItemsQuantityAsync(cartIdResult.Value, cancellationToken);
     }
 
     public decimal CalculateItemsTotal(IEnumerable<CartItem>? cartItems)
@@ -215,11 +222,11 @@ public class CartService : ICartService
             .Sum();
     }
 
-    private async Task<Result> SaveAndUpdateCart(int cartId)
+    private async Task<Result> SaveAndUpdateCart(int cartId, CancellationToken cancellationToken = default)
     {
-        await _unitOfWork.SaveChangesAsync();
+        await _unitOfWork.SaveChangesAsync(cancellationToken);
 
-        var updateResult = await UpdateTotalCartValue(cartId);
+        var updateResult = await UpdateTotalCartValue(cartId, cancellationToken);
 
         if (updateResult.IsFailure)
             return Result.Failure(updateResult.Error);

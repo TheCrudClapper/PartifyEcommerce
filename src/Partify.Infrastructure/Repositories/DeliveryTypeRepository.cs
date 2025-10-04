@@ -3,22 +3,21 @@ using CSOS.Core.Domain.Entities;
 using CSOS.Infrastructure.DbContext;
 using Microsoft.EntityFrameworkCore;
 
-namespace CSOS.Infrastructure.Repositories
+namespace CSOS.Infrastructure.Repositories;
+
+public class DeliveryTypeRepository : IDeliveryTypeRepository
 {
-    public class DeliveryTypeRepository : IDeliveryTypeRepository
+    private readonly DatabaseContext _dbContext;
+
+    public DeliveryTypeRepository(DatabaseContext dbContext)
     {
-        private readonly DatabaseContext _dbContext;
+        _dbContext = dbContext;
+    }
 
-        public DeliveryTypeRepository(DatabaseContext dbContext)
-        {
-            _dbContext = dbContext;
-        }
-
-        public async Task<IEnumerable<DeliveryType>> GetAllDeliveryTypesAsync()
-        {
-            return await _dbContext.DeliveryTypes
-                .Where(dt => dt.IsActive)
-                .ToListAsync();
-        }
+    public async Task<IEnumerable<DeliveryType>> GetAllDeliveryTypesAsync(CancellationToken cancellationToken)
+    {
+        return await _dbContext.DeliveryTypes
+            .Where(dt => dt.IsActive)
+            .ToListAsync(cancellationToken);
     }
 }

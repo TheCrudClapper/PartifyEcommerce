@@ -1,14 +1,13 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-namespace CSOS.UI.Controllers
+namespace CSOS.UI.Controllers;
+
+[AllowAnonymous]
+public class ContactController : Controller
 {
-    [AllowAnonymous]
-    public class ContactController : Controller
+    public IActionResult Index(CancellationToken cancellationToken)
     {
-        public IActionResult Index()
-        {
-            return View();
-        }
+        return View();
     }
 }

@@ -1,7 +1,6 @@
 ﻿using CSOS.Core.Caching;
 using CSOS.Core.Domain.Entities;
 using CSOS.Core.Domain.RepositoryContracts;
-using CSOS.Core.DTO.ProductImage;
 using CSOS.Core.DTO.UniversalDto;
 using CSOS.Core.Mappings.ToDto;
 using CSOS.Core.ResultTypes;
@@ -20,11 +19,13 @@ public class ProductImageService : IProductImageService
         _cachingHelper = cachingHelper;
     }
 
-    public async Task<IEnumerable<SelectListItemDto>> GetOfferPicturesAsync(int offerId)
+    public async Task<IEnumerable<SelectListItemDto>> GetOfferPicturesAsync(int offerId, CancellationToken cancellationToken)
     {
-        var items = await _productImageRepo.GetImagesFromOfferAsync(offerId);
+        var items = await _productImageRepo.GetImagesFromOfferAsync(offerId, cancellationToken);
 
-        return items.Select(item => item.ToSelectListItem()).ToList();
+        return items
+            .Select(item => item.ToSelectListItem())
+            .ToList();
     }
     
     public Result DeleteImagesFromOffer(IEnumerable<ProductImage> images, IEnumerable<int>? imageIds)
