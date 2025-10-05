@@ -46,7 +46,8 @@ namespace CSOS.Tests
             //Arrange
             List<ProductCategory> categories = _fixture.CreateMany<ProductCategory>().ToList();
 
-            _productCategoryMoq.Setup(item => item.GetAllProductCategoriesAsync()).ReturnsAsync((categories));
+            _productCategoryMoq.Setup(item => item.GetAllProductCategoriesAsync(It.IsAny<CancellationToken>()))
+                .ReturnsAsync((categories));
 
             //Act
             var categoriesFromDb = await _categoryGetterService.GetProductCategoriesAsCardResponse();
@@ -63,7 +64,8 @@ namespace CSOS.Tests
         {
             //Arrange
             List<ProductCategory> categories = new List<ProductCategory>();
-            _productCategoryMoq.Setup(item => item.GetAllProductCategoriesAsync()).ReturnsAsync((categories));
+            _productCategoryMoq.Setup(item => item.GetAllProductCategoriesAsync(It.IsAny<CancellationToken>()))
+                .ReturnsAsync((categories));
 
             //Act
             var categoriesFromDb = await _categoryGetterService.GetProductCategoriesAsCardResponse();

@@ -41,7 +41,7 @@ namespace CSOS.Tests
         public async Task GetProductConditionsAsSelectList_CategoriesEmpty_ReturnsEmptyList()
         {
             //Arrange
-            _conditionRepoMock.Setup(item => item.GetAllConditionsAsync())
+            _conditionRepoMock.Setup(item => item.GetAllConditionsAsync(It.IsAny<CancellationToken>()))
                 .ReturnsAsync(new List<Condition>() { });
 
             //Act
@@ -58,7 +58,7 @@ namespace CSOS.Tests
             //Arrange
             List<Condition> conditions = _fixture.CreateMany<Condition>().ToList();
 
-            _conditionRepoMock.Setup(item => item.GetAllConditionsAsync()).ReturnsAsync(conditions);
+            _conditionRepoMock.Setup(item => item.GetAllConditionsAsync(It.IsAny<CancellationToken>())).ReturnsAsync(conditions);
 
             //Act
             var conditionsFromService = await _conditionGetterService.GetProductConditionsAsSelectList();
@@ -75,7 +75,7 @@ namespace CSOS.Tests
             //Arrange
             List<Condition> conditions = _fixture.CreateMany<Condition>().ToList();
 
-            _conditionRepoMock.Setup(item => item.GetAllConditionsAsync()).ReturnsAsync(conditions);
+            _conditionRepoMock.Setup(item => item.GetAllConditionsAsync(It.IsAny<CancellationToken>())).ReturnsAsync(conditions);
 
             //Act
             var conditionsFromService = await _conditionGetterService.GetProductConditionsAsSelectList();

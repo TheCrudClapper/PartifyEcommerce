@@ -62,11 +62,11 @@ namespace CSOS.Tests
         {
             //Arrange
             _cartController = CreateController();
-            _cartServiceMock.Setup(item => item.GetLoggedUserCart())
+            _cartServiceMock.Setup(item => item.GetLoggedUserCart(It.IsAny<CancellationToken>()))
                 .ReturnsAsync(Result.Failure<CartResponseDto>(CartErrors.CartDoesNotExists));
 
             //Act
-            IActionResult result = await _cartController.Index();
+            IActionResult result = await _cartController.Index(CancellationToken.None);
 
             //Assert
             ViewResult viewResult = result.Should().BeOfType<ViewResult>().Subject;
@@ -80,10 +80,10 @@ namespace CSOS.Tests
             _cartController = CreateController();
             CartResponseDto cartResponseDto =
                 _fixture.Build<CartResponseDto>().Without(item => item.CartItems).Create();
-            _cartServiceMock.Setup(item => item.GetLoggedUserCart()).ReturnsAsync(Result.Success(cartResponseDto));
+            _cartServiceMock.Setup(item => item.GetLoggedUserCart(It.IsAny<CancellationToken>())).ReturnsAsync(Result.Success(cartResponseDto));
 
             //Act
-            IActionResult result = await _cartController.Index();
+            IActionResult result = await _cartController.Index(CancellationToken.None);
 
             //Assert
             ViewResult viewResult = result.Should().BeOfType<ViewResult>().Subject;
@@ -100,11 +100,11 @@ namespace CSOS.Tests
             //Arrange
             _cartController = CreateController();
             var error = OfferErrors.OfferDoesNotExist;
-            _cartServiceMock.Setup(item => item.AddToCart(It.IsAny<int>(), It.IsAny<int>()))
+            _cartServiceMock.Setup(item => item.AddToCart(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(Result.Failure(error));
 
             //Act
-            IActionResult result = await _cartController.AddToCart(It.IsAny<int>(), It.IsAny<int>());
+            IActionResult result = await _cartController.AddToCart(It.IsAny<int>(), It.IsAny<int>(), CancellationToken.None);
 
             // Assert
             result.Should().BeOfType<JsonResult>()
@@ -121,11 +121,11 @@ namespace CSOS.Tests
         {
             //Arrange
             _cartController = CreateController();
-            _cartServiceMock.Setup(item => item.AddToCart(It.IsAny<int>(), It.IsAny<int>()))
+            _cartServiceMock.Setup(item => item.AddToCart(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(Result.Success);
 
             //Act
-            IActionResult result = await _cartController.AddToCart(It.IsAny<int>(), It.IsAny<int>());
+            IActionResult result = await _cartController.AddToCart(It.IsAny<int>(), It.IsAny<int>(), CancellationToken.None);
 
             //Assert
             result.Should().BeOfType<JsonResult>()
@@ -147,10 +147,10 @@ namespace CSOS.Tests
             //Arrange
             _cartController = CreateController();
             var error = CartItemErrors.CartItemDoesNotExists;
-            _cartServiceMock.Setup(item => item.DeleteFromCart(It.IsAny<int>())).ReturnsAsync(Result.Failure(error));
+            _cartServiceMock.Setup(item => item.DeleteFromCart(It.IsAny<int>(), It.IsAny<CancellationToken>())).ReturnsAsync(Result.Failure(error));
 
             //Act
-            IActionResult result = await _cartController.DeleteFromCart(It.IsAny<int>());
+            IActionResult result = await _cartController.DeleteFromCart(It.IsAny<int>(), CancellationToken.None);
 
             //Assert
             result.Should().BeOfType<JsonResult>()
@@ -167,10 +167,10 @@ namespace CSOS.Tests
         {
             //Arrange
             _cartController = CreateController();
-            _cartServiceMock.Setup(item => item.DeleteFromCart(It.IsAny<int>())).ReturnsAsync(Result.Success);
+            _cartServiceMock.Setup(item => item.DeleteFromCart(It.IsAny<int>(), It.IsAny<CancellationToken>())).ReturnsAsync(Result.Success);
             
             //Act
-            IActionResult result = await _cartController.DeleteFromCart(It.IsAny<int>());
+            IActionResult result = await _cartController.DeleteFromCart(It.IsAny<int>(), CancellationToken.None);
             
             //Assert
             result.Should().BeOfType<JsonResult>()
@@ -190,10 +190,10 @@ namespace CSOS.Tests
             //Arrange
             _cartController = CreateController();
             var error = CartItemErrors.CartItemDoesNotExists;
-            _cartServiceMock.Setup(item => item.UpdateCartItemQuantity(It.IsAny<int>(), It.IsAny<int>())).ReturnsAsync(Result.Failure(error));
+            _cartServiceMock.Setup(item => item.UpdateCartItemQuantity(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<CancellationToken>())).ReturnsAsync(Result.Failure(error));
 
             //Act
-            IActionResult result = await _cartController.UpdateQuantityInCart(It.IsAny<int>(), It.IsAny<int>());
+            IActionResult result = await _cartController.UpdateQuantityInCart(It.IsAny<int>(), It.IsAny<int>(), CancellationToken.None);
 
             //Assert
             result.Should().BeOfType<JsonResult>()
@@ -210,10 +210,10 @@ namespace CSOS.Tests
         {
             //Arrange
             _cartController = CreateController();
-            _cartServiceMock.Setup(item => item.UpdateCartItemQuantity(It.IsAny<int>(), It.IsAny<int>())).ReturnsAsync(Result.Success);
+            _cartServiceMock.Setup(item => item.UpdateCartItemQuantity(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<CancellationToken>())).ReturnsAsync(Result.Success);
 
             //Act
-            IActionResult result = await _cartController.UpdateQuantityInCart(It.IsAny<int>(), It.IsAny<int>());
+            IActionResult result = await _cartController.UpdateQuantityInCart(It.IsAny<int>(), It.IsAny<int>(), CancellationToken.None);
 
             //Assert
             result.Should().BeOfType<JsonResult>()
@@ -232,7 +232,7 @@ namespace CSOS.Tests
         {
             //Act
             _cartController = CreateController();
-            IActionResult result = _cartController.GetCartItemsCount();
+            IActionResult result = _cartController.GetCartItemsCount(CancellationToken.None);
 
             //Assert
             result.Should().BeOfType<ViewComponentResult>();

@@ -50,7 +50,7 @@ namespace CSOS.Tests
 
             AddressUpdateRequest addressDto = _fixture.Create<AddressUpdateRequest>();
             
-            _addressRepoMock.Setup(item => item.GetAddressByIdAsync(It.IsAny<int>()))
+            _addressRepoMock.Setup(item => item.GetAddressByIdAsync(It.IsAny<int>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(address);
 
             _unitOfWorkMock.Setup(item => item.SaveChangesAsync(CancellationToken.None))
@@ -77,7 +77,8 @@ namespace CSOS.Tests
             //Arrange
             int invalidAddressId = _fixture.Create<int>();
             AddressUpdateRequest addressDto = _fixture.Create<AddressUpdateRequest>();
-            _addressRepoMock.Setup(item => item.GetAddressByIdAsync(invalidAddressId)).ReturnsAsync((Address?)null); 
+            _addressRepoMock.Setup(item => item.GetAddressByIdAsync(invalidAddressId, It.IsAny<CancellationToken>()))
+                .ReturnsAsync((Address?)null); 
             
             //Act
             var result = await _addressService.EditUserAddress(addressDto);

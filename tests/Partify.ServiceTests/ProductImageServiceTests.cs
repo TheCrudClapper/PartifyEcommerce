@@ -40,7 +40,7 @@ namespace CSOS.Tests
             //Arrange
             int invalidOfferId = -1;
             List<ProductImage> productImages = [];
-            _productImageRepositoryMock.Setup(item => item.GetImagesFromOfferAsync(invalidOfferId))
+            _productImageRepositoryMock.Setup(item => item.GetImagesFromOfferAsync(invalidOfferId, It.IsAny<CancellationToken>()))
                 .ReturnsAsync(productImages);
 
             //Act
@@ -61,7 +61,8 @@ namespace CSOS.Tests
                 .CreateMany()
                 .ToList();
 
-            _productImageRepositoryMock.Setup(item => item.GetImagesFromOfferAsync(offerId)).ReturnsAsync(productImages);
+            _productImageRepositoryMock.Setup(item => item.GetImagesFromOfferAsync(offerId, It.IsAny<CancellationToken>()))
+                .ReturnsAsync(productImages);
 
             //Act
             List<SelectListItemDto> productImagesFromService = (await _productImageService.GetOfferPicturesAsync(offerId)).ToList();

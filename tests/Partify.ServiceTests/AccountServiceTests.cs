@@ -12,6 +12,7 @@ using AutoFixture;
 using CSOS.Core.DTO.Account;
 using CSOS.Core.ResultTypes;
 using CSOS.Core.Services;
+using System.Threading;
 
 namespace CSOS.Tests
 {
@@ -56,7 +57,6 @@ namespace CSOS.Tests
                 Mock.Of<ILogger<RoleManager<ApplicationRole>>>()
             );
 
-
             _fixture = new Fixture();
 
             _accountService = new AccountService(
@@ -66,12 +66,7 @@ namespace CSOS.Tests
                 _accountRepoMock.Object,
                 _unitOfWorkMock.Object,
                 _addressServiceMock.Object,
-                 roleManager);
-
-            //_fixture.Behaviors.OfType<ThrowingRecursionBehavior>().ToList()
-            // .ForEach(b => _fixture.Behaviors.Remove(b));
-            //_fixture.Behaviors.Add(new OmitOnRecursionBehavior());
-
+                roleManager);
         }
 
         #region GetAccountForEdit Method Tests
@@ -79,16 +74,16 @@ namespace CSOS.Tests
         public async Task GetAccountForEdit_UserResultFailure_ReturnFailureResult()
         {
             //Arrange
-            _currentUserServiceMock.Setup(item => item.GetCurrentUserAsync()).ReturnsAsync(Result.Failure<ApplicationUser>(AccountErrors.AccountNotFound));
+            _currentUserServiceMock.Setup(item => item.GetCurrentUserAsync(It.IsAny<CancellationToken>()))
+                .ReturnsAsync(Result.Failure<ApplicationUser>(AccountErrors.AccountNotFound));
 
             //Act
-            var result = await _accountService.GetAccount();
+            var result = await _accountService.GetAccount(CancellationToken.None);
 
             //Assert
             result.Should().BeOfType<Result<AccountResponse>>();
             result.IsFailure.Should().BeTrue();
             result.Error.Should().Be(AccountErrors.AccountNotFound);
-
         }
 
         [Fact]
@@ -102,10 +97,11 @@ namespace CSOS.Tests
                 .Without(item => item.LikedOffers)
                 .Create();
 
-            _currentUserServiceMock.Setup(item => item.GetCurrentUserAsync()).ReturnsAsync(applicationUser);
+            _currentUserServiceMock.Setup(item => item.GetCurrentUserAsync(It.IsAny<CancellationToken>()))
+                .ReturnsAsync(applicationUser);
 
             //Act
-            var result = await _accountService.GetAccount();
+            var result = await _accountService.GetAccount(CancellationToken.None);
 
             //Assert
             result.Value.Should().NotBeNull();
@@ -125,10 +121,11 @@ namespace CSOS.Tests
         {
             //Arrange 
             AccountUpdateRequest dto = _fixture.Create<AccountUpdateRequest>();
-            _currentUserServiceMock.Setup(item => item.GetCurrentUserAsync()).ReturnsAsync(Result.Failure<ApplicationUser>(AccountErrors.AccountNotFound));
+            _currentUserServiceMock.Setup(item => item.GetCurrentUserAsync(It.IsAny<CancellationToken>()))
+                .ReturnsAsync(Result.Failure<ApplicationUser>(AccountErrors.AccountNotFound));
 
             //Act
-            var result = await _accountService.Edit(dto);
+            var result = await _accountService.Edit(dto, CancellationToken.None);
 
             //Assert
             result.IsFailure.Should().BeTrue();
@@ -147,11 +144,13 @@ namespace CSOS.Tests
                 .Without(item => item.LikedOffers)
                 .Create();
 
-            _currentUserServiceMock.Setup(item => item.GetCurrentUserAsync()).ReturnsAsync(Result.Success(applicationUser));
-            _unitOfWorkMock.Setup(item => item.SaveChangesAsync(CancellationToken.None)).ReturnsAsync(1);
+            _currentUserServiceMock.Setup(item => item.GetCurrentUserAsync(It.IsAny<CancellationToken>()))
+                .ReturnsAsync(Result.Success(applicationUser));
+            _unitOfWorkMock.Setup(item => item.SaveChangesAsync(It.IsAny<CancellationToken>()))
+                .ReturnsAsync(1);
 
             //Act
-            var result = await _accountService.Edit(dto);
+            var result = await _accountService.Edit(dto, CancellationToken.None);
 
             //Assert
             result.IsSuccess.Should().BeTrue();

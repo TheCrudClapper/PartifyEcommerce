@@ -44,10 +44,11 @@ namespace CSOS.Tests
                 .Create();
 
             _addressController = CreateController();
-            _addressServiceMock.Setup(item => item.AddAddress(It.IsAny<AddressAddRequest>())).ReturnsAsync(Result.Failure(AddressErrors.AddressAddRequestIsNull));
+            _addressServiceMock.Setup(item => item.AddAddress(It.IsAny<AddressAddRequest>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(Result.Failure(AddressErrors.AddressAddRequestIsNull));
 
             //Act
-            IActionResult result = await _addressController.Create(addAddressViewModel);
+            IActionResult result = await _addressController.Create(addAddressViewModel, CancellationToken.None);
 
             //Assert
             JsonResult jsonResult = result.Should().BeOfType<JsonResult>().Subject;
@@ -65,11 +66,13 @@ namespace CSOS.Tests
                .Create();
 
             _addressController = CreateController();
-            _addressServiceMock.Setup(item => item.AddAddress(It.IsAny<AddressAddRequest>())).ReturnsAsync(Result.Success());
-            _addressServiceMock.Setup(item => item.GetUserAddressForEdit()).ReturnsAsync(Result.Failure<AddressResponse>(AddressErrors.AddressNotFound));
+            _addressServiceMock.Setup(item => item.AddAddress(It.IsAny<AddressAddRequest>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(Result.Success());
+            _addressServiceMock.Setup(item => item.GetUserAddressForEdit(It.IsAny<CancellationToken>()))
+                .ReturnsAsync(Result.Failure<AddressResponse>(AddressErrors.AddressNotFound));
 
             //Act
-            IActionResult result = await _addressController.Create(addAddressViewModel);
+            IActionResult result = await _addressController.Create(addAddressViewModel, CancellationToken.None);
 
             //Assert
             JsonResult jsonResult = result.Should().BeOfType<JsonResult>().Subject;
@@ -93,12 +96,15 @@ namespace CSOS.Tests
             var countries = _fixture.CreateMany<SelectListItemDto>(3);
 
             _addressController = CreateController();
-            _addressServiceMock.Setup(item => item.AddAddress(It.IsAny<AddressAddRequest>())).ReturnsAsync(Result.Success());
-            _addressServiceMock.Setup(item => item.GetUserAddressForEdit()).ReturnsAsync(Result.Success<AddressResponse>(accountResponse));
-            _countriesGetterServiceMock.Setup(item => item.GetCountriesSelectionList()).ReturnsAsync(countries);
+            _addressServiceMock.Setup(item => item.AddAddress(It.IsAny<AddressAddRequest>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(Result.Success());
+            _addressServiceMock.Setup(item => item.GetUserAddressForEdit(It.IsAny<CancellationToken>()))
+                .ReturnsAsync(Result.Success<AddressResponse>(accountResponse));
+            _countriesGetterServiceMock.Setup(item => item.GetCountriesSelectionList(It.IsAny<CancellationToken>()))
+                .ReturnsAsync(countries);
 
             //Act
-            IActionResult result = await _addressController.Create(addAddressViewModel);
+            IActionResult result = await _addressController.Create(addAddressViewModel, CancellationToken.None);
 
             //Assert
             PartialViewResult viewResult = result.Should().BeOfType<PartialViewResult>().Subject;
@@ -138,10 +144,11 @@ namespace CSOS.Tests
         {
             //Arrange
             _addressController = CreateController();
-            _addressServiceMock.Setup(item => item.GetUserAddressForEdit()).ReturnsAsync(Result.Failure<AddressResponse>(AddressErrors.AddressNotFound));
+            _addressServiceMock.Setup(item => item.GetUserAddressForEdit(It.IsAny<CancellationToken>()))
+                .ReturnsAsync(Result.Failure<AddressResponse>(AddressErrors.AddressNotFound));
 
             //Act
-            IActionResult result = await _addressController.Edit(It.IsAny<int>());
+            IActionResult result = await _addressController.Edit(It.IsAny<int>(), CancellationToken.None);
 
             //Assert
             ViewResult viewResult = result.Should().BeOfType<ViewResult>().Subject;
@@ -155,11 +162,13 @@ namespace CSOS.Tests
             _addressController = CreateController();
             List<SelectListItemDto> countries = _fixture.CreateMany<SelectListItemDto>().ToList();
             AddressResponse dto = _fixture.Create<AddressResponse>();
-            _addressServiceMock.Setup(item => item.GetUserAddressForEdit()).ReturnsAsync(dto);
-            _countriesGetterServiceMock.Setup(item => item.GetCountriesSelectionList()).ReturnsAsync(countries);
+            _addressServiceMock.Setup(item => item.GetUserAddressForEdit(It.IsAny<CancellationToken>()))
+                .ReturnsAsync(dto);
+            _countriesGetterServiceMock.Setup(item => item.GetCountriesSelectionList(It.IsAny<CancellationToken>()))
+                .ReturnsAsync(countries);
 
             //Act
-            IActionResult result = await _addressController.Edit(It.IsAny<int>());
+            IActionResult result = await _addressController.Edit(It.IsAny<int>(), CancellationToken.None);
 
             //Assert
             PartialViewResult viewResult = result.Should().BeOfType<PartialViewResult>().Subject;
@@ -178,10 +187,11 @@ namespace CSOS.Tests
                 .With(item => item.SelectedCountry, "21")
                 .Create();
 
-            _addressServiceMock.Setup(item => item.EditUserAddress(It.IsAny<AddressUpdateRequest>())).ReturnsAsync(Result.Success);
+            _addressServiceMock.Setup(item => item.EditUserAddress(It.IsAny<AddressUpdateRequest>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(Result.Success);
 
             //Act
-            IActionResult result = await _addressController.Edit(viewModel);
+            IActionResult result = await _addressController.Edit(viewModel, CancellationToken.None);
 
             //Assert
             JsonResult jsonResult = result.Should().BeOfType<JsonResult>().Subject;
@@ -199,10 +209,11 @@ namespace CSOS.Tests
                 .With(item => item.SelectedCountry, "21")
                 .Create();
 
-            _addressServiceMock.Setup(item => item.EditUserAddress(It.IsAny<AddressUpdateRequest>())).ReturnsAsync(Result.Failure(AddressErrors.AddressNotFound));
+            _addressServiceMock.Setup(item => item.EditUserAddress(It.IsAny<AddressUpdateRequest>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(Result.Failure(AddressErrors.AddressNotFound));
 
             //Act
-            IActionResult result = await _addressController.Edit(viewModel);
+            IActionResult result = await _addressController.Edit(viewModel, CancellationToken.None);
 
             //Assert
             JsonResult jsonResult = result.Should().BeOfType<JsonResult>().Subject;
@@ -222,11 +233,12 @@ namespace CSOS.Tests
                .With(item => item.Source, "AddOrder")
                .Create();
 
-            _countriesGetterServiceMock.Setup(item => item.GetCountriesSelectionList()).ReturnsAsync(countries);
+            _countriesGetterServiceMock.Setup(item => item.GetCountriesSelectionList(It.IsAny<CancellationToken>()))
+                .ReturnsAsync(countries);
             _addressController.ModelState.AddModelError("TestError", "ErrorTest");
 
             //Act
-            IActionResult result = await _addressController.Edit(viewModel);
+            IActionResult result = await _addressController.Edit(viewModel, CancellationToken.None);
 
             //Assert
             PartialViewResult partialView = result.Should().BeOfType<PartialViewResult>().Subject;
@@ -246,11 +258,12 @@ namespace CSOS.Tests
                .With(item => item.Source, "AccountDetails")
                .Create();
 
-            _countriesGetterServiceMock.Setup(item => item.GetCountriesSelectionList()).ReturnsAsync(countries);
+            _countriesGetterServiceMock.Setup(item => item.GetCountriesSelectionList(It.IsAny<CancellationToken>()))
+                .ReturnsAsync(countries);
             _addressController.ModelState.AddModelError("TestError", "ErrorTest");
 
             //Act
-            IActionResult result = await _addressController.Edit(viewModel);
+            IActionResult result = await _addressController.Edit(viewModel, CancellationToken.None);
 
             //Assert
             PartialViewResult partialView = result.Should().BeOfType<PartialViewResult>().Subject;

@@ -36,7 +36,8 @@ namespace CSOS.Tests
         public async Task GetCountriesSelectionList_CountriesEmpty_ReturnEmptyList()
         {
             //Arrange
-            _countryRepoMock.Setup(item => item.GetAllCountriesAsync()).ReturnsAsync(new List<Country>() {});
+            _countryRepoMock.Setup(item => item.GetAllCountriesAsync(It.IsAny<CancellationToken>()))
+                .ReturnsAsync(new List<Country>() {});
             
             //Act
             var countriesFromService = await _countryGetterService.GetCountriesSelectionList();
@@ -55,7 +56,8 @@ namespace CSOS.Tests
                 .Without(item => item.Addresses)
                 .CreateMany().ToList();
             
-            _countryRepoMock.Setup(item => item.GetAllCountriesAsync()).ReturnsAsync(countries);
+            _countryRepoMock.Setup(item => item.GetAllCountriesAsync(It.IsAny<CancellationToken>()))
+                .ReturnsAsync(countries);
             
             //Act
             var countriesFromService = await _countryGetterService.GetCountriesSelectionList();

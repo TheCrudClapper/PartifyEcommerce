@@ -32,7 +32,8 @@ namespace CSOS.Tests
         public async Task GetAllDeliveryTypesAsSelectionList_DeliveryTypesEmpty_ReturnEmptyList()
         {
             //Arrange
-            _deliveryTypeRepoMock.Setup(item => item.GetAllDeliveryTypesAsync()).ReturnsAsync(new List<DeliveryType>() { });
+            _deliveryTypeRepoMock.Setup(item => item.GetAllDeliveryTypesAsync(It.IsAny<CancellationToken>()))
+                .ReturnsAsync(new List<DeliveryType>() { });
 
             //Act
             var deliveryTypes = await _deliveryTypeGetterService.GetAllDeliveryTypesAsSelectList();
@@ -51,7 +52,8 @@ namespace CSOS.Tests
                 .CreateMany()
                 .ToList();
 
-            _deliveryTypeRepoMock.Setup(item => item.GetAllDeliveryTypesAsync()).ReturnsAsync(deliveries);
+            _deliveryTypeRepoMock.Setup(item => item.GetAllDeliveryTypesAsync(It.IsAny<CancellationToken>()))
+                .ReturnsAsync(deliveries);
 
             //Act
             var deliveriesFromService = await _deliveryTypeGetterService.GetAllDeliveryTypesAsSelectList();
@@ -69,7 +71,8 @@ namespace CSOS.Tests
         public async Task GetOtherDeliveryTypes_DeliveryTypesEmpty_ReturnEmptyList()
         {
             //Arrange
-            _deliveryTypeRepoMock.Setup(item => item.GetAllDeliveryTypesAsync()).ReturnsAsync(new List<DeliveryType>() { });
+            _deliveryTypeRepoMock.Setup(item => item.GetAllDeliveryTypesAsync(It.IsAny<CancellationToken>()))
+                .ReturnsAsync(new List<DeliveryType>() { });
 
             //Act
             var deliveries = await _deliveryTypeGetterService.GetOtherDeliveryTypes();
@@ -97,7 +100,8 @@ namespace CSOS.Tests
 
             deliveries.AddRange(parcelLockerDeliveries);
 
-            _deliveryTypeRepoMock.Setup(item => item.GetAllDeliveryTypesAsync()).ReturnsAsync(deliveries);
+            _deliveryTypeRepoMock.Setup(item => item.GetAllDeliveryTypesAsync(It.IsAny<CancellationToken>()))
+                .ReturnsAsync(deliveries);
 
             //Act
             var deliveriesFromService = await _deliveryTypeGetterService.GetOtherDeliveryTypes();
@@ -114,7 +118,8 @@ namespace CSOS.Tests
         public async Task GetParcelLockerDeliveryTypes_DeliveryTypesEmpty_ReturnsEmptyList()
         {
             //Arrange
-            _deliveryTypeRepoMock.Setup(item => item.GetAllDeliveryTypesAsync()).ReturnsAsync(new List<DeliveryType>() { });
+            _deliveryTypeRepoMock.Setup(item => item.GetAllDeliveryTypesAsync(It.IsAny<CancellationToken>()))
+                .ReturnsAsync(new List<DeliveryType>() { });
 
             //Act
             var deliveries = await _deliveryTypeGetterService.GetParcelLockerDeliveryTypes();
@@ -140,7 +145,8 @@ namespace CSOS.Tests
 
             deliveries.AddRange(parcelLockerDeliveries);
 
-            _deliveryTypeRepoMock.Setup(item => item.GetAllDeliveryTypesAsync()).ReturnsAsync(deliveries);
+            _deliveryTypeRepoMock.Setup(item => item.GetAllDeliveryTypesAsync(It.IsAny<CancellationToken>()))
+                .ReturnsAsync(deliveries);
 
             //Act
             var deliveriesFromService = await _deliveryTypeGetterService.GetParcelLockerDeliveryTypes();
