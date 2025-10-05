@@ -22,11 +22,11 @@ public class CartController : Controller
     }
 
     [HttpGet]
-    public async Task<IActionResult> Index()
+    public async Task<IActionResult> Index(CancellationToken cancellationToken)
     {
 
         _logger.LogInformation("CartController - GET Index Method called.");
-        var result = await _cartService.GetLoggedUserCart();
+        var result = await _cartService.GetLoggedUserCart(cancellationToken);
 
         if (result.IsFailure)
         {
@@ -41,12 +41,12 @@ public class CartController : Controller
 
 
     [HttpPost]
-    public async Task<IActionResult> AddToCart(int id, int quantity = 1)
+    public async Task<IActionResult> AddToCart(int id, int quantity = 1, CancellationToken cancellationToken = default)
     {
         _logger.LogInformation("CartController - POST AddToCart Method called with offerId: {OfferId} and quantity: {Quantity}",
             id, quantity);
 
-        var result = await _cartService.AddToCart(id, quantity);
+        var result = await _cartService.AddToCart(id, quantity, cancellationToken);
 
         if (result.IsFailure)
         {
@@ -60,10 +60,10 @@ public class CartController : Controller
     }
 
     [HttpPost]
-    public async Task<IActionResult> DeleteFromCart(int id)
+    public async Task<IActionResult> DeleteFromCart(int id, CancellationToken cancellationToken)
     {
         _logger.LogInformation("CartController - POST DeleteFromCart Method called with offerId: {OfferId}", id);
-        var result = await _cartService.DeleteFromCart(id);
+        var result = await _cartService.DeleteFromCart(id, cancellationToken);
 
         if (result.IsFailure)
         {
@@ -76,12 +76,12 @@ public class CartController : Controller
     }
 
     [HttpPost]
-    public async Task<IActionResult> UpdateQuantityInCart(int cartItemId, int quantity)
+    public async Task<IActionResult> UpdateQuantityInCart(int cartItemId, int quantity, CancellationToken cancellationToken)
     {
         _logger.LogInformation("CartController - POST UpdateQuantityInCart Method called with cartItemId: {CartItemId} and quantity: {Quantity}",
             cartItemId, quantity);
 
-        var result = await _cartService.UpdateCartItemQuantity(cartItemId, quantity);
+        var result = await _cartService.UpdateCartItemQuantity(cartItemId, quantity, cancellationToken);
 
         if (result.IsFailure)
         {
@@ -96,7 +96,7 @@ public class CartController : Controller
     }
 
     [HttpGet]
-    public IActionResult GetCartItemsCount()
+    public IActionResult GetCartItemsCount(CancellationToken cancellationToken)
     {
         return ViewComponent("NavbarCart");
     }

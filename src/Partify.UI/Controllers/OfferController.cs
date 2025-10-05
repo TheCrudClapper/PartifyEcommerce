@@ -165,6 +165,7 @@ public class OfferController : Controller
     [HttpGet]
     public async Task<IActionResult> UserOffers(string? title, CancellationToken cancellationToken)
     {
+        await Task.Delay(10000);
         _logger.LogInformation("OfferControler - GET UserOffers Method called with parameters: Title: {Title}", title);
         IEnumerable<UserOfferResponse> response = await _offerService.GetFilteredUserOffers(title, cancellationToken);
         IEnumerable<UserOffersViewModel> userOffers = response
@@ -187,6 +188,7 @@ public class OfferController : Controller
     [AllowAnonymous]
     public async Task<IActionResult> Details([FromRoute] int id, CancellationToken cancellationToken)
     {
+        throw new NotImplementedException();
         _logger.LogInformation("OfferControler - GET Details Method called with parameters: OfferId: {OfferId}", id);
         var response = await _offerService.GetOffer(id, cancellationToken);
 

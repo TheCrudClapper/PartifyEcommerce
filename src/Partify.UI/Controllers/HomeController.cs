@@ -15,17 +15,20 @@ public class HomeController : Controller
     private readonly IOfferService _offerService;
     private readonly IPictureHandlerService _pictureHandlerService;
     private readonly ICategoryGetterService _categoryGetterService;
+    private readonly IWebHostEnvironment _env;
     private readonly ILogger<HomeController> _logger;
 
     public HomeController(IOfferService offerService,
         ICategoryGetterService categoryGetterService,
         ILogger<HomeController> logger,
-        IPictureHandlerService pictureHandlerService)
+        IPictureHandlerService pictureHandlerService,
+        IWebHostEnvironment env)
     {
         _offerService = offerService;
         _categoryGetterService = categoryGetterService;
         _pictureHandlerService = pictureHandlerService;
         _logger = logger;
+        _env = env;
     }
 
     [HttpGet]
@@ -68,10 +71,12 @@ public class HomeController : Controller
     {
         _logger.LogInformation("HomeController - GET Error Method called");
         IExceptionHandlerFeature? handler = HttpContext.Features.Get<IExceptionHandlerPathFeature>();
-        if (handler != null && handler.Error != null)
-            ViewBag.Error = handler.Error.Message;
 
-        return View();
+        var message = handler?.Error != null && _env.IsDevelopment()
+            ? handler.Error.Message
+            : "500 - Internal Server Error";
+
+        return View("Error", message);
     }
 }
 
