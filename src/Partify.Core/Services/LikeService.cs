@@ -2,6 +2,7 @@
 using CSOS.Core.Domain.RepositoryContracts;
 using CSOS.Core.DTO.LikedOfferDto;
 using CSOS.Core.Mappings.ToDto;
+using CSOS.Core.Mappings.ToEntity.LikeOfferMappings;
 using CSOS.Core.ResultTypes;
 using CSOS.Core.ServiceContracts;
 
@@ -56,11 +57,7 @@ public class LikeService : ILikeService
             return new LikeResult(false, "Unliked this offer");
         }
 
-        var likedOffer = new LikedOffer
-        {
-            OfferId = offerId,
-            UserId = userId,
-        };
+        var likedOffer = LikedOfferEntityMappings.ToLikeOffer(userId, offerId);
 
         await _likeOfferRepository.AddOrReactivateLikeAsync(likedOffer, cancellationToken);
         await _unitOfWork.SaveChangesAsync(cancellationToken);

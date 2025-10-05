@@ -21,12 +21,12 @@ public class LikeOfferRepository : ILikeOfferRepository
         if (existing != null)
         {
             existing.IsActive = true;
-            existing.DateEdited = DateTime.Now;
+            existing.DateEdited = DateTime.UtcNow;
         }
         else
         {
             likedOffer.IsActive = true;
-            likedOffer.DateCreated = DateTime.Now;
+            likedOffer.DateCreated = DateTime.UtcNow;
             await _dbContext.LikedOffers.AddAsync(likedOffer, cancellationToken);
         }
     }
