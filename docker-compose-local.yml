@@ -1,0 +1,10 @@
+# This docker-compose file allows to run application in local machine
+# where postgress is installed, but we need redis cache container
+services:
+    # Redis Cache
+  redis: 
+    image: redis:latest
+    volumes:
+        - ./src/redis-cache:/data 
+    ports:
+        - "6379:6379"
