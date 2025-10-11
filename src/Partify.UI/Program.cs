@@ -78,7 +78,7 @@ builder.Services.AddAuthorization(options =>
 });
 
 // -----------------------------
-// Identity / Cookie Settings
+// Identity / Cookie Settingss
 // -----------------------------
 builder.Services.ConfigureApplicationCookie(options =>
 {
