@@ -110,7 +110,7 @@ public class AccountController : Controller
         return RedirectToAction("Index", "Home");
     }
 
-    [HttpGet]
+    [HttpPost]
     public async Task<IActionResult> Logout()
     {
         await _accountService.Logout();

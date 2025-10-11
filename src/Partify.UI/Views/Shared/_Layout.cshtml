@@ -62,7 +62,14 @@
                                         {
                                             <li><a class="dropdown-item" asp-controller="Home" asp-area="Admin" asp-action="Index"><i class="fa-solid fa-user-tie me-2"></i>Admin Panel</a></li>  
                                         }
-                                        <li><a class="dropdown-item text-danger" asp-controller="Account" asp-action="Logout"><i class="fa-solid fa-right-from-bracket me-2"></i> Logout</a></li>
+                                        <li>
+                                            <form asp-controller="Account" asp-action="Logout" method="post" class="dropdown-item p-0 m-0">
+                                                @Html.AntiForgeryToken()
+                                                <button type="submit" class="dropdown-item text-danger bg-transparent border-0 w-100 text-start">
+                                                    <i class="fa-solid fa-right-from-bracket me-2"></i> Logout
+                                                </button>
+                                            </form>
+                                        </li>
                                     </ul>
                                 </li>
                             </ul>

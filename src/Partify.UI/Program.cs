@@ -1,14 +1,13 @@
-using CSOS.Infrastructure;
+using CSOS.Core;
 using CSOS.Core.Domain.RepositoryContracts;
+using CSOS.Infrastructure;
 using CSOS.Infrastructure.Repositories;
+using CSOS.UI.Filters;
 using CSOS.UI.Helpers;
 using CSOS.UI.Middleware;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.HttpLogging;
 using Microsoft.AspNetCore.Mvc;
-using CSOS.Core;
-using CSOS.UI.Filters;
-
 //Third Party
 using Serilog;
 
@@ -67,6 +66,7 @@ builder.Services.AddAuthorization(options =>
     options.FallbackPolicy = new AuthorizationPolicyBuilder()
         .RequireAuthenticatedUser().Build();
 
+
     options.AddPolicy("NotAuthorized", policy =>
     {
         //when user is already logged in he cant access given method
@@ -88,17 +88,13 @@ builder.Services.ConfigureApplicationCookie(options =>
     options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
     options.Cookie.SameSite = SameSiteMode.Lax;
     options.Cookie.HttpOnly = true;
+    options.ExpireTimeSpan = TimeSpan.FromMinutes(20);
+    options.SlidingExpiration = true;
 });
 
 // -----------------------------
-// Session & Anti-forgery
+//  Anti-forgery
 // -----------------------------
-builder.Services.AddSession(options =>
-{
-    options.Cookie.HttpOnly = true;
-    options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
-    options.Cookie.SameSite = SameSiteMode.Lax;
-});
 
 builder.Services.AddAntiforgery(options =>
 {
@@ -107,6 +103,10 @@ builder.Services.AddAntiforgery(options =>
     options.Cookie.SameSite = SameSiteMode.Lax;
 });
 builder.Services.AddHttpContextAccessor();
+
+// -----------------------------
+//  Controllers & Views 
+// -----------------------------
 builder.Services.AddControllersWithViews(options =>
 {
     //for every form that uses POST,DELETE,PUT generate csrf token
@@ -151,13 +151,6 @@ app.UseHttpLogging();
 app.UseRouting();
 app.UseAuthentication(); //reads auth cookie and can extract data from it
 app.UseAuthorization(); //validates access permissions of the user
-
-
-// -----------------------------
-// Session
-// -----------------------------
-app.UseSession();
-
 
 // -----------------------------
 // Controller Routes
