@@ -103,7 +103,7 @@ public class OfferRepository : IOfferRepository
             DateCreated = o.DateCreated.Date,
             IsLiked = userId != null
                     ? o.LikedOffers
-                        .Any(lo => lo.UserId == userId && lo.IsActive)
+                        .Any(lo => lo.UserId == userId && lo.OfferId == o.Id && lo.IsActive)
                     : false,
             Seller = o.Seller.UserName!,
             Description = o.Product.Description,
