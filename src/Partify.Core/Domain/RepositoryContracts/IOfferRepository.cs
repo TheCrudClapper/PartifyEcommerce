@@ -1,4 +1,5 @@
 ﻿using CSOS.Core.Domain.Entities;
+using CSOS.Core.DTO.OfferDto;
 using CSOS.Core.Helpers;
 
 namespace CSOS.Core.Domain.RepositoryContracts;
@@ -42,14 +43,14 @@ public interface IOfferRepository
     /// <param name="title">Optional search phrase for product name.</param>
     /// <param name="userId">The ID of the user.</param>
     /// <returns>A collection of matching offers created by the user.</returns>
-    Task<IEnumerable<Offer>> GetFilteredUserOffersAsync(string? title, Guid userId, CancellationToken cancellationToken = default);
+    Task<IEnumerable<UserOfferResponse>> GetFilteredUserOffersAsync(string? title, Guid userId, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Retrieves filtered public offers based on the specified filter criteria.
     /// </summary>
     /// <param name="filter">The filter parameters including category, price range, search phrase, etc.</param>
     /// <returns>A collection of matching public offers.</returns>
-    Task<IEnumerable<Offer>> GetFilteredOffersAsync(OfferFilter filter, CancellationToken cancellationToken = default);
+    Task<IEnumerable<OfferIndexResponse>> GetFilteredOffersAsync(OfferFilter filter, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Retrieves a user's specific active offer by ID.
@@ -64,7 +65,7 @@ public interface IOfferRepository
     /// </summary>
     /// <param name="id">The ID of the offer.</param>
     /// <returns>The offer with full details; otherwise, null.</returns>
-    Task<Offer?> GetOfferWithAllDetailsAsync(int id, CancellationToken cancellationToken = default);
+    Task<OfferResponse?> GetOfferWithAllDetailsAsync(int id, Guid? userId ,CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Retrieves a user's offer with all related data, including product, category, condition, and delivery types.

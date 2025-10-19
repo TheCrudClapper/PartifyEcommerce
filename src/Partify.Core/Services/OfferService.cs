@@ -141,8 +141,7 @@ public class OfferService : IOfferService
         cancellationToken.ThrowIfCancellationRequested();
 
         Guid userId = _currentUserService.GetUserId();
-        var offers = await _offerRepo.GetFilteredUserOffersAsync(title, userId, cancellationToken);
-        return offers.Select(item => item.ToUserOfferResponse());
+        return await _offerRepo.GetFilteredUserOffersAsync(title, userId, cancellationToken);
     }
 
     public async Task<Result<EditOfferResponse>> GetOfferForEdit(int id, CancellationToken cancellationToken)
@@ -160,9 +159,7 @@ public class OfferService : IOfferService
     public async Task<IEnumerable<OfferIndexResponse>> GetFilteredOffers(OfferFilter filter, CancellationToken cancellationToken)
     {
         cancellationToken.ThrowIfCancellationRequested();
-
-        var offers = await _offerRepo.GetFilteredOffersAsync(filter, cancellationToken);
-        return offers.Select(item => item.ToOfferIndexResponse());
+        return await _offerRepo.GetFilteredOffersAsync(filter, cancellationToken);
     }
 
     public async Task<IEnumerable<CardResponse>> GetIndexPageOffers(CancellationToken cancellationToken)
@@ -227,19 +224,17 @@ public class OfferService : IOfferService
         if (objFromCache.Found)
             return objFromCache.Value;
 
-        var offer = await _offerRepo.GetOfferWithAllDetailsAsync(id, cancellationToken);
-
-        if (offer == null || offer.IsOfferPrivate)
-            return Result.Failure<OfferResponse>(OfferErrors.OfferDoesNotExist);
-
         var userId = _currentUserService.GetCurrentUserIdOrNull();
 
-        var response = offer.ToOfferResponse(userId);
+        var offer = await _offerRepo.GetOfferWithAllDetailsAsync(id, userId, cancellationToken);
+
+        if (offer is null)
+            return Result.Failure<OfferResponse>(OfferErrors.OfferDoesNotExist);
 
         await _cachingHelper
-            .CacheObject(response, cacheKey, CachingProfiles.LongTTLCacheOption, cancellationToken);
+            .CacheObject(offer, cacheKey, CachingProfiles.LongTTLCacheOption, cancellationToken);
 
-        return response;
+        return offer;
     }
 
     private async Task SaveNewImagesAsync(IOfferImageDto dto, Product product, CancellationToken cancellationToken)
